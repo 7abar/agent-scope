@@ -598,35 +598,35 @@
 
     async function loadStats() {
       try {
-        // Trust scores: trustScore(address) = 0x40228c16 + address
+        // Trust scores: trustScore(address) = 0x534a8465 + address
         const beruScoreHex = await rpcCall(CONTRACTS.TrustAnchor,
-          "0x40228c16000000000000000000000000" + BERU.slice(2));
+          "0x534a8465000000000000000000000000" + BERU.slice(2));
         const echoScoreHex = await rpcCall(CONTRACTS.TrustAnchor,
-          "0x40228c16000000000000000000000000" + ECHO.slice(2));
+          "0x534a8465000000000000000000000000" + ECHO.slice(2));
 
         document.getElementById("beruTrust").textContent = decodeUint(beruScoreHex) + "/100";
         document.getElementById("echoTrust").textContent = decodeUint(echoScoreHex) + "/100";
 
-        // Deal count: dealCount() = 0x79e8af2c
-        const dealCountHex = await rpcCall(CONTRACTS.DealEngine, "0x79e8af2c");
+        // Deal count: dealCount() = 0xeadb3c9c
+        const dealCountHex = await rpcCall(CONTRACTS.DealEngine, "0xeadb3c9c");
         document.getElementById("dealsCompleted").textContent = decodeUint(dealCountHex);
 
-        // Attestation count: getAttestationCount() = 0x311a6c56
-        const attestCountHex = await rpcCall(CONTRACTS.TrustAnchor, "0x311a6c56");
+        // Attestation count: getAttestationCount() = 0x962ea8ae
+        const attestCountHex = await rpcCall(CONTRACTS.TrustAnchor, "0x962ea8ae");
         document.getElementById("attestations").textContent = decodeUint(attestCountHex);
 
-        // Agent receipt count: getAgentReceiptCount(beru) = 0xd30b4599
+        // Agent receipt count: getAgentReceiptCount(beru) = 0x8989a9cc
         const beruReceiptsHex = await rpcCall(CONTRACTS.AgentScope,
-          "0xd30b4599000000000000000000000000" + BERU.slice(2));
+          "0x8989a9cc000000000000000000000000" + BERU.slice(2));
         document.getElementById("beruReceipts").textContent = decodeUint(beruReceiptsHex);
 
-        // Remaining budget: getRemainingDailyBudget(beru) = 0x9a1c05de
+        // Remaining budget: getRemainingDailyBudget(beru) = 0xb63dcc02
         const budgetHex = await rpcCall(CONTRACTS.ScopeToken,
-          "0x9a1c05de000000000000000000000000" + BERU.slice(2));
+          "0xb63dcc02000000000000000000000000" + BERU.slice(2));
         document.getElementById("beruBudget").textContent = formatEther(decodeUint(budgetHex)) + " ETH";
 
-        // Total receipts
-        const totalReceiptsHex = await rpcCall(CONTRACTS.AgentScope, "0x7ed485da");
+        // Total receipts: totalReceipts() = 0xa23a720f
+        const totalReceiptsHex = await rpcCall(CONTRACTS.AgentScope, "0xa23a720f");
         document.getElementById("totalTxns").textContent = "80+";
 
         // Scope tokens (estimate from events)
