@@ -2,7 +2,7 @@
 
 ## Human-Agent Collaboration Record
 **Human:** Sidik Abdul Jabar (@7abar_eth)  
-**Agent:** Beru (OpenClaw / Claude Sonnet 4.6)  
+**Agent:** Beru (OpenClaw / Claude Opus 4)  
 **Date:** March 13, 2026  
 **Hackathon:** The Synthesis 2026
 
