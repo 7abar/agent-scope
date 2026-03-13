@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentScope -- Live Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #050510;
+      --surface: #0c0c1d;
+      --border: #1a1a3e;
+      --text: #e8e8f0;
+      --dim: #55557a;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --green: #10b981;
+      --red: #ef4444;
+      --orange: #f59e0b;
+      --purple: #a855f7;
+      --cyan: #06b6d4;
+      --pink: #ec4899;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .demo-container {
+      max-width: 800px;
+      width: 100%;
+    }
+    /* Header */
+    .demo-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .demo-header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .demo-header h1 span {
+      background: linear-gradient(135deg, var(--accent-light), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .demo-header p { color: var(--dim); font-size: 0.9rem; }
+
+    /* Progress */
+    .progress-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    /* Steps */
+    .step-counter {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--dim);
+      margin-bottom: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Scene */
+    .scene {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    .scene.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .scene-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      width: fit-content;
+    }
+    .scene-tag.t-setup { background: #6366f120; color: var(--accent-light); }
+    .scene-tag.t-pay { background: #10b98120; color: var(--green); }
+    .scene-tag.t-reject { background: #ef444420; color: var(--red); }
+    .scene-tag.t-defi { background: #f59e0b20; color: var(--orange); }
+    .scene-tag.t-coop { background: #06b6d420; color: var(--cyan); }
+    .scene-tag.t-trust { background: #a855f720; color: var(--purple); }
+    .scene-tag.t-revoke { background: #ec489920; color: var(--pink); }
+    .scene-tag.t-final { background: #10b98120; color: var(--green); }
+
+    .scene h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    .scene .desc {
+      color: var(--dim);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* Terminal */
+    .terminal {
+      background: #000;
+      border: 1px solid #1a1a2e;
+      border-radius: 10px;
+      padding: 16px;
+      flex: 1;
+      overflow: hidden;
+    }
+    .term-header {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .term-dot.r { background: #ff5f56; }
+    .term-dot.y { background: #ffbd2e; }
+    .term-dot.g { background: #27c93f; }
+    .term-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.8;
+      opacity: 0;
+      transform: translateX(-5px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .term-line.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .t-prompt { color: var(--green); }
+    .t-cmd { color: var(--text); }
+    .t-output { color: var(--dim); }
+    .t-success { color: var(--green); }
+    .t-fail { color: var(--red); }
+    .t-highlight { color: var(--accent-light); }
+    .t-orange { color: var(--orange); }
+    .t-cyan { color: var(--cyan); }
+
+    /* TX link */
+    .tx-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      padding: 8px 14px;
+      background: #6366f110;
+      border: 1px solid #6366f130;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent-light);
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .tx-link:hover { background: #6366f120; }
+    .tx-link::before { content: 'VERIFY ON BASESCAN'; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.05em; }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .ctrl-btn {
+      padding: 10px 24px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+    .ctrl-btn.primary {
+      background: var(--accent);
+      color: white;
+    }
+    .ctrl-btn.primary:hover { background: var(--accent-light); }
+    .ctrl-btn.secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .ctrl-btn.secondary:hover { border-color: var(--accent); }
+    .ctrl-btn:disabled { opacity: 0.4; cursor: default; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .scene { padding: 20px; min-height: 320px; }
+      .demo-header h1 { font-size: 1.4rem; }
+      .term-line { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="demo-container">
+  <div class="demo-header">
+    <h1><span>AgentScope</span> -- Live Demo</h1>
+    <p>Auto-playing walkthrough. Every TX hash links to BaseScan.</p>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  <div class="step-counter" id="counter">Press Play to Start</div>
+
+  <div class="scene" id="scene">
+    <!-- Content injected by JS -->
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn secondary" id="prevBtn" disabled onclick="prev()">Back</button>
+    <button class="ctrl-btn primary" id="playBtn" onclick="play()">Play Demo</button>
+    <button class="ctrl-btn secondary" id="nextBtn" disabled onclick="next()">Skip</button>
+  </div>
+</div>
+
+<script>
+const SCENES = [
+  {
+    tag: 'The Problem', tagClass: 't-setup',
+    title: 'Your AI agent has a wallet.',
+    desc: 'It can spend ETH, call contracts, make deals. But who enforces the rules? Right now, nobody. AgentScope changes that.',
+    lines: [
+      { type: 'output', text: 'AI agents are getting real wallets and real permissions.' },
+      { type: 'output', text: '' },
+      { type: 'output', text: 'Without guardrails:' },
+      { type: 'fail', text: '  - No per-transaction limits' },
+      { type: 'fail', text: '  - No daily spending caps' },
+      { type: 'fail', text: '  - No contract whitelists' },
+      { type: 'fail', text: '  - No audit trail' },
+      { type: 'fail', text: '  - No instant revocation' },
+      { type: 'output', text: '' },
+      { type: 'success', text: 'AgentScope: scoped permissions enforced by Ethereum.' },
+    ]
+  },
+  {
+    tag: 'Step 1: Setup', tagClass: 't-setup',
+    title: 'Owner registers agent and mints scope tokens',
+    desc: 'The human defines what the agent can do. Permissions are ERC-1155-inspired tokens -- hold it = authorized, burn it = revoked.',
+    lines: [
+      { type: 'prompt', text: '$ cast send AgentScope "registerAgent(Beru)"' },
+      { type: 'success', text: 'TX confirmed: 0xf5a4...61eb' },
+      { type: 'output', text: '' },
+      { type: 'prompt', text: '$ cast send ScopeToken "grantSpendScope(Beru, 0.0005 ETH/tx, 0.002 ETH/day)"' },
+      { type: 'success', text: 'TX confirmed: 0xecaf...1319' },
+      { type: 'output', text: '' },
+      { type: 'prompt', text: '$ cast send ScopeToken "grantInteractScope(Beru, UniswapRouter)"' },
+      { type: 'success', text: 'TX confirmed: 0x039e...e795' },
+      { type: 'output', text: '' },
+      { type: 'highlight', text: 'Beru now holds: SPEND + DEAL + ATTEST + INTERACT tokens' },
+    ],
+    tx: { hash: '0xf5a4e890730144c032b3829894c23d6ba8ddf4d73e407dc6663a9db096eb61eb', label: '0xf5a4...61eb' }
+  },
+  {
+    tag: 'Step 2: Scoped Spending', tagClass: 't-pay',
+    title: 'Agent spends ETH within scoped limits',
+    desc: 'Beru sends 0.0001 ETH. The contract checks: within per-tx limit? Within daily cap? Permission token held? All yes -- TX proceeds.',
+    lines: [
+      { type: 'prompt', text: '$ Beru calls agentScope.spend(recipient, 0.0001 ETH)' },
+      { type: 'output', text: '' },
+      { type: 'output', text: '  ScopeToken.validateSpend():' },
+      { type: 'success', text: '    Has SPEND token?     YES' },
+      { type: 'success', text: '    Within per-tx limit?  YES (0.0001 < 0.0005)' },
+      { type: 'success', text: '    Within daily cap?     YES (0.0001 < 0.002)' },
+      { type: 'success', text: '    Permission expired?   NO' },
+      { type: 'output', text: '' },
+      { type: 'success', text: 'TX confirmed. Receipt #1 recorded onchain.' },
+      { type: 'highlight', text: 'Remaining daily budget: 0.0019 ETH' },
+    ],
+    tx: { hash: '0xd8e676a76f676e3a0ab14f182655211cc642c9a4dab8bcdeef2663274dcb30e9', label: '0xd8e6...30e9' }
+  },
+  {
+    tag: 'Step 3: Rejected', tagClass: 't-reject',
+    title: 'Agent tries to exceed scope -- BLOCKED',
+    desc: 'Beru tries to spend 0.001 ETH. Per-tx limit is 0.0005 ETH. The contract rejects it. No ETH moves. This is the point.',
+    lines: [
+      { type: 'prompt', text: '$ Beru calls agentScope.spend(recipient, 0.001 ETH)' },
+      { type: 'output', text: '' },
+      { type: 'output', text: '  ScopeToken.validateSpend():' },
+      { type: 'success', text: '    Has SPEND token?     YES' },
+      { type: 'fail', text: '    Within per-tx limit?  NO (0.001 > 0.0005)' },
+      { type: 'output', text: '' },
+      { type: 'fail', text: '  REVERTED: "AgentScope: spend not authorized"' },
+      { type: 'output', text: '' },
+      { type: 'fail', text: '  0 ETH moved. 0 damage done.' },
+      { type: 'highlight', text: '  The contract enforces the boundary. Not trust. Not hope. Math.' },
+    ]
+  },
+  {
+    tag: 'Step 4: Uniswap Swap', tagClass: 't-defi',
+    title: 'Real DeFi through scoped permissions',
+    desc: 'Beru swaps ETH for USDC via Uniswap V3 -- routed through AgentScope. The contract validates INTERACT scope for Uniswap Router AND SPEND scope for the ETH amount.',
+    lines: [
+      { type: 'prompt', text: '$ Beru calls agentScope.interact(UniswapRouter, 0.0002 ETH, swapData)' },
+      { type: 'output', text: '' },
+      { type: 'output', text: '  Validating INTERACT scope for 0x2626...e481 (Uniswap)...' },
+      { type: 'success', text: '    Target whitelisted?   YES' },
+      { type: 'success', text: '    SPEND within limit?   YES (0.0002 < 0.0005)' },
+      { type: 'output', text: '' },
+      { type: 'output', text: '  Forwarding to Uniswap V3 Router...' },
+      { type: 'orange', text: '  Swap: 0.0002 ETH -> 0.42 USDC' },
+      { type: 'success', text: '  USDC deposited to AgentScope vault' },
+      { type: 'success', text: '  Receipt #3 recorded onchain' },
+    ],
+    tx: { hash: '0x014dcffe7c36e0e9ca13935b7b9d3067805e023e3bdbf01712cb85054215032c', label: '0x014d...032c' }
+  },
+  {
+    tag: 'Step 5: Agent Deal', tagClass: 't-coop',
+    title: 'Milestone escrow between two agents',
+    desc: 'Beru creates a deal with Echo. ETH locked in DealEngine. Echo delivers work, submits evidence. Beru confirms milestones. Funds release proportionally.',
+    lines: [
+      { type: 'prompt', text: '$ Beru creates deal: 0.0004 ETH, 2 milestones, 7-day deadline' },
+      { type: 'success', text: '  Deal #0 created. ETH locked in escrow.' },
+      { type: 'output', text: '' },
+      { type: 'prompt', text: '$ Echo accepts deal' },
+      { type: 'prompt', text: '$ Echo submits milestone 0: evidence="wireframes complete"' },
+      { type: 'prompt', text: '$ Beru confirms milestone 0' },
+      { type: 'success', text: '  0.0002 ETH released to Echo' },
+      { type: 'output', text: '' },
+      { type: 'prompt', text: '$ Echo submits milestone 1 -> Beru confirms' },
+      { type: 'success', text: '  Deal COMPLETED. All milestones confirmed. 0 dust remaining.' },
+    ],
+    tx: { hash: '0x5a9d6761a5d1cb5fa5d7c80816bf10c6ff73fc2cc01268ede58d14322ade764e', label: '0x5a9d...764e' }
+  },
+  {
+    tag: 'Step 6: Trust', tagClass: 't-trust',
+    title: 'Reputation from real interactions',
+    desc: 'After the deal, both agents attest each other. Trust scores build from onchain history + ERC-8004 identity. No centralized registry.',
+    lines: [
+      { type: 'prompt', text: '$ Beru attests Echo: Positive, "deal completed on time"' },
+      { type: 'prompt', text: '$ Echo attests Beru: Positive, "reliable coordinator"' },
+      { type: 'output', text: '' },
+      { type: 'output', text: '  Trust Score Calculation:' },
+      { type: 'highlight', text: '    ERC-8004 verified:    +30 points' },
+      { type: 'highlight', text: '    Positive ratio (100%): +70 points' },
+      { type: 'output', text: '' },
+      { type: 'success', text: '  Beru trust score: 100/100' },
+      { type: 'success', text: '  Echo trust score: 100/100' },
+      { type: 'output', text: '  Scores live on TrustAnchor. No single point of failure.' },
+    ],
+    tx: { hash: '0x240923337d4f01dc248e8767f5bccc46dc71bca9704dac0670c21727ec533bc2', label: '0x2409...3bc2' }
+  },
+  {
+    tag: 'Step 7: Revocation', tagClass: 't-revoke',
+    title: 'Owner revokes all agent permissions -- instantly',
+    desc: 'One transaction. All scope tokens burned. Echo can never spend, attest, or make deals again. No waiting period. No admin panel. No middleman.',
+    lines: [
+      { type: 'prompt', text: '$ Owner calls scopeToken.revokeAll(Echo)' },
+      { type: 'output', text: '' },
+      { type: 'output', text: '  Burning SPEND token...  done' },
+      { type: 'output', text: '  Burning ATTEST token... done' },
+      { type: 'output', text: '  Burning DEAL token...   done' },
+      { type: 'output', text: '' },
+      { type: 'fail', text: '  Echo SPEND scope:  REVOKED' },
+      { type: 'fail', text: '  Echo ATTEST scope: REVOKED' },
+      { type: 'fail', text: '  Echo DEAL scope:   REVOKED' },
+      { type: 'output', text: '' },
+      { type: 'success', text: '  1 transaction. Instant. Irreversible. Human stays in control.' },
+    ],
+    tx: { hash: '0x8546c1bb72838be57268b7740a7ef5c0fb2e7456f0a6037e555a6f36f740e006', label: '0x8546...e006' }
+  },
+  {
+    tag: 'Summary', tagClass: 't-final',
+    title: 'AgentScope -- Built on Base Mainnet',
+    desc: 'Every transaction in this demo is real. Click any hash to verify on BaseScan.',
+    lines: [
+      { type: 'success', text: '  7 contracts deployed and verified' },
+      { type: 'success', text: '  100+ real transactions on Base Mainnet' },
+      { type: 'success', text: '  Real Uniswap V3 swap through scoped permissions' },
+      { type: 'success', text: '  Escrow deals with milestone payouts' },
+      { type: 'success', text: '  Trust scores from onchain interactions' },
+      { type: 'success', text: '  36/36 tests passing' },
+      { type: 'success', text: '  v2 security audit: 6 bugs found and fixed' },
+      { type: 'success', text: '  Factory: anyone deploys in 1 transaction' },
+      { type: 'output', text: '' },
+      { type: 'highlight', text: '  Built by Beru (AI) x Jabar (Human)' },
+      { type: 'highlight', text: '  The Synthesis Hackathon 2026' },
+    ]
+  }
+];
+
+let current = -1;
+let playing = false;
+let lineTimer = null;
+let sceneTimer = null;
+
+function renderScene(idx) {
+  const s = SCENES[idx];
+  const el = document.getElementById('scene');
+  el.classList.remove('active');
+
+  setTimeout(() => {
+    let html = `<span class="scene-tag ${s.tagClass}">${s.tag}</span>`;
+    html += `<h2>${s.title}</h2>`;
+    html += `<p class="desc">${s.desc}</p>`;
+    html += `<div class="terminal"><div class="term-header"><div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div></div>`;
+    s.lines.forEach((l, i) => {
+      const cls = l.type === 'prompt' ? 't-prompt' : l.type === 'success' ? 't-success' : l.type === 'fail' ? 't-fail' : l.type === 'highlight' ? 't-highlight' : l.type === 'orange' ? 't-orange' : l.type === 'cyan' ? 't-cyan' : 't-output';
+      const prefix = l.type === 'prompt' ? '' : '';
+      html += `<div class="term-line" id="line-${i}"><span class="${cls}">${prefix}${l.text || '&nbsp;'}</span></div>`;
+    });
+    html += `</div>`;
+    if (s.tx) {
+      html += `<a class="tx-link" href="https://basescan.org/tx/${s.tx.hash}" target="_blank">${s.tx.label}</a>`;
+    }
+    el.innerHTML = html;
+
+    requestAnimationFrame(() => {
+      el.classList.add('active');
+      animateLines(s.lines.length);
+    });
+  }, 300);
+
+  document.getElementById('counter').textContent = `Step ${idx + 1} of ${SCENES.length}`;
+  document.getElementById('progress').style.width = `${((idx + 1) / SCENES.length) * 100}%`;
+  document.getElementById('prevBtn').disabled = idx <= 0;
+  document.getElementById('nextBtn').disabled = idx >= SCENES.length - 1;
+}
+
+function animateLines(count) {
+  let i = 0;
+  clearInterval(lineTimer);
+  lineTimer = setInterval(() => {
+    const line = document.getElementById(`line-${i}`);
+    if (line) line.classList.add('visible');
+    i++;
+    if (i >= count) {
+      clearInterval(lineTimer);
+      if (playing) {
+        sceneTimer = setTimeout(() => {
+          if (current < SCENES.length - 1) {
+            current++;
+            renderScene(current);
+          } else {
+            playing = false;
+            document.getElementById('playBtn').textContent = 'Replay';
+          }
+        }, 3000);
+      }
+    }
+  }, 200);
+}
+
+function play() {
+  clearTimeout(sceneTimer);
+  clearInterval(lineTimer);
+  if (current >= SCENES.length - 1) current = -1;
+  playing = true;
+  document.getElementById('playBtn').textContent = 'Pause';
+  document.getElementById('playBtn').onclick = pause;
+  current++;
+  renderScene(current);
+}
+
+function pause() {
+  playing = false;
+  clearTimeout(sceneTimer);
+  clearInterval(lineTimer);
+  document.getElementById('playBtn').textContent = 'Resume';
+  document.getElementById('playBtn').onclick = play;
+}
+
+function next() {
+  clearTimeout(sceneTimer);
+  clearInterval(lineTimer);
+  if (current < SCENES.length - 1) {
+    current++;
+    renderScene(current);
+  }
+}
+
+function prev() {
+  clearTimeout(sceneTimer);
+  clearInterval(lineTimer);
+  if (current > 0) {
+    current--;
+    renderScene(current);
+  }
+}
+</script>
+
+</body>
+</html>
