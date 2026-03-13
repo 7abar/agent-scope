@@ -117,6 +117,7 @@ All contracts verified on BaseScan with source code visible.
 | DealEngine | `0x33182c42a1f243a17E40ffeee958e120cDB047cd` | [View](https://basescan.org/address/0x33182c42a1f243a17e40ffeee958e120cdb047cd#code) |
 | TrustAnchor | `0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578` | [View](https://basescan.org/address/0xccf00f70d4f54fa26c49fdffe1bca79ae7074578#code) |
 | SelfVerifier | `0xa805a3f4FF51912c867e65E2de52b8C77f830DE5` | [View](https://basescan.org/address/0xa805a3f4ff51912c867e65e2de52b8c77f830de5#code) |
+| PartnerIntegrations | `0xa5aEeA7d9894bbE792eF6dEf8FAF6F150011e8E9` | [View](https://basescan.org/address/0xa5aeea7d9894bbe792ef6def8faf6f150011e8e9#code) |
 
 ---
 
@@ -223,7 +224,7 @@ cd contracts && forge test -v
 
 6. **Minimal trust surface.** No shared keys, no centralized registries, no platform dependency. Trust is enforced by math on Ethereum.
 
-7. **Partner integration.** Self Protocol's ZK proof-of-human system integrated for privacy-preserving agent identity verification.
+7. **Partner integrations.** Self Protocol (ZK identity), Uniswap (scoped swaps), Lido (vault staking), ENS (agent names), Lit Protocol (encrypted deals), OLAS (registry compatibility). Seven partner tools, all onchain.
 
 ---
 

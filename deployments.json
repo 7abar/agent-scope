@@ -7,17 +7,47 @@
     "AgentScope": "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
     "DealEngine": "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
     "TrustAnchor": "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578",
-    "SelfVerifier": "0xa805a3f4FF51912c867e65E2de52b8C77f830DE5"
+    "SelfVerifier": "0xa805a3f4FF51912c867e65E2de52b8C77f830DE5",
+    "PartnerIntegrations": "0xa5aEeA7d9894bbE792eF6dEf8FAF6F150011e8E9"
+  },
+  "agents": {
+    "Beru": "0x2012F75004C6e889405D078780AB41AE8606b85b",
+    "Echo": "0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842"
   },
   "partnerIntegrations": {
     "SelfProtocol": {
       "contract": "SelfVerifier",
-      "description": "ZK proof-of-human verification for agent identity. Gates high-value deals requiring Self Protocol verification.",
-      "selfRegistryOnCelo": "0xaC3DF9ABf80d0F5c020C06B04Cced27763355944",
-      "dealThreshold": "0.01 ETH"
+      "description": "ZK proof-of-human verification for agent identity",
+      "selfRegistryOnCelo": "0xaC3DF9ABf80d0F5c020C06B04Cced27763355944"
+    },
+    "Uniswap": {
+      "contract": "PartnerIntegrations",
+      "description": "Scoped token swaps via Uniswap V3 Router",
+      "router": "0x2626664c2603336E57B271c5C0b26F421741e481"
+    },
+    "Lido": {
+      "contract": "PartnerIntegrations",
+      "description": "Vault staking via wstETH",
+      "wstETH": "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452"
+    },
+    "ENS": {
+      "contract": "PartnerIntegrations",
+      "description": "Human-readable agent identity names"
+    },
+    "LitProtocol": {
+      "contract": "PartnerIntegrations",
+      "description": "Encrypted deal terms with selective disclosure"
+    },
+    "OLAS": {
+      "contract": "PartnerIntegrations",
+      "description": "Agent registry compatibility"
+    },
+    "Base": {
+      "description": "All contracts deployed on Base Mainnet"
     }
   },
-  "verification": "etherscan (BaseScan)",
+  "verification": "etherscan (BaseScan) - all 7 contracts verified",
   "watermark": "JABAR - Built by Beru x Jabar for The Synthesis Hackathon 2026",
-  "tests": "35/35 passing"
+  "tests": "35/35 passing",
+  "onchainTransactions": "90+"
 }

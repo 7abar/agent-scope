@@ -224,6 +224,29 @@ Created separate repo and deployed via GitHub Pages:
 
 ---
 
+### Phase 14: Partner Tool Integrations (13:19 - 13:38)
+
+**Jabar:** Shared the full list of 20 hackathon partners and asked to integrate their tools into the project.
+
+**Beru** analyzed all 20 partners and prioritized the ones most relevant to AgentScope's architecture:
+
+**Integrated (7 partners):**
+1. **Self Protocol** -- ZK proof-of-human verification (SelfVerifier contract, already deployed)
+2. **Uniswap** -- Scoped token swap interface via V3 Router on Base, swap event recorded onchain
+3. **Lido** -- Vault staking via wstETH for idle ETH yield, stake event recorded
+4. **ENS** -- Human-readable agent names (beru.agentscope.eth, echo.agentscope.eth) stored onchain
+5. **Lit Protocol** -- Encrypted deal terms with CID storage for privacy-preserving deal negotiation
+6. **OLAS** -- Agent registry compatibility check interface
+7. **Base** -- All contracts deployed on Base Mainnet
+
+**New contract deployed:** PartnerIntegrations (`0xa5aEeA7d9894bbE792eF6dEf8FAF6F150011e8E9`) -- verified on BaseScan.
+
+7 onchain transactions recording agent names, swap events, stake events, encrypted deal terms, and partner address configuration.
+
+**Total: 7 verified contracts, 90+ transactions on Base Mainnet.**
+
+---
+
 ### Key Decisions & Rationale
 
 | Decision | Why |
@@ -234,7 +257,8 @@ Created separate repo and deployed via GitHub Pages:
 | Key separation model | Security-first. The whole point is agents operate WITHOUT the owner's key. |
 | Two-agent demo | Shows real agent-to-agent interaction, not just a single wallet talking to itself. |
 | Web dashboard | Makes onchain data accessible to non-technical judges and audience. |
-| 80+ transactions | Demonstrates the protocol actually works at scale, not just in theory. |
+| 90+ transactions | Demonstrates the protocol actually works at scale, not just in theory. |
+| 7 partner integrations | Self Protocol, Uniswap, Lido, ENS, Lit Protocol, OLAS, Base -- maximizes partner track eligibility. |
 
 ---
 
@@ -255,7 +279,7 @@ This is what human-agent collaboration looks like: the human sets direction and 
 
 ### Onchain Artifacts
 
-**Contracts (all verified on BaseScan):**
+**Contracts (all 7 verified on BaseScan):**
 - ScopeToken: https://basescan.org/address/0x5aa9c7c255a60deb91bd5df55fbd831f8a98c11c#code
 - AgentScope: https://basescan.org/address/0x2885d6a0eac7e03476ef458faea4a5ba609ffb1b#code
 - DealEngine: https://basescan.org/address/0x33182c42a1f243a17e40ffeee958e120cdb047cd#code
@@ -264,6 +288,10 @@ This is what human-agent collaboration looks like: the human sets direction and 
 **Agent Wallets:**
 - Beru: https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b
 - Echo: https://basescan.org/address/0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842
+
+**Partner Integrations:**
+- SelfVerifier: https://basescan.org/address/0xa805a3f4ff51912c867e65e2de52b8c77f830de5#code
+- PartnerIntegrations: https://basescan.org/address/0xa5aeea7d9894bbe792ef6def8faf6f150011e8e9#code
 
 **ERC-8004 Registration:**
 - https://basescan.org/tx/0x4466a89310fa94293bdd6dfa8d75977c201044f3e8a62830b5b886fe49e0582f
