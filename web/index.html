@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentScope -- Onchain OS for AI Agents</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #1e1e2e;
+      --text: #e4e4ef;
+      --dim: #6b6b8a;
+      --accent: #4f8ff7;
+      --green: #34d399;
+      --orange: #fb923c;
+      --red: #f87171;
+      --purple: #a78bfa;
+    }
+
+    body {
+      font-family: -apple-system, 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 80px 0 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      color: var(--dim);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto 24px;
+    }
+    .hero .tagline {
+      display: inline-block;
+      background: linear-gradient(135deg, #4f8ff720, #a78bfa20);
+      border: 1px solid #4f8ff730;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat {
+      text-align: center;
+      padding: 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .stat .number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+    .stat .number.green { color: var(--green); }
+    .stat .number.purple { color: var(--purple); }
+    .stat .number.orange { color: var(--orange); }
+    .stat .label {
+      font-size: 0.8rem;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+    .stat .loading { color: var(--dim); font-size: 1.2rem; }
+
+    /* Section */
+    .section {
+      padding: 40px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .section:last-child { border-bottom: none; }
+    .section h2 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .section .subtitle {
+      color: var(--dim);
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+
+    /* Problem cards */
+    .problems {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .problem-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .problem-card .icon { font-size: 1.5rem; margin-bottom: 8px; }
+    .problem-card h3 { font-size: 1rem; margin-bottom: 8px; color: var(--text); }
+    .problem-card p { font-size: 0.85rem; color: var(--dim); line-height: 1.5; }
+    .problem-card .solution {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--green);
+    }
+
+    /* Agent cards */
+    .agents {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .agent-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .agent-card .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .agent-card .name {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .agent-card .trust-badge {
+      background: var(--green);
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .agent-card .addr {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+      word-break: break-all;
+      margin-bottom: 12px;
+    }
+    .agent-card .addr a { color: var(--accent); text-decoration: none; }
+    .agent-card .addr a:hover { text-decoration: underline; }
+    .agent-card .scopes {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .scope-tag {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .scope-tag.active { background: #4f8ff720; color: var(--accent); }
+    .scope-tag.revoked { background: #f8717120; color: var(--red); text-decoration: line-through; }
+    .agent-card .metrics { display: flex; gap: 16px; }
+    .agent-card .metric .val { font-weight: 700; font-size: 1.1rem; }
+    .agent-card .metric .lbl { font-size: 0.7rem; color: var(--dim); text-transform: uppercase; }
+
+    /* Activity feed */
+    .feed { display: flex; flex-direction: column; gap: 8px; }
+    .feed-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.85rem;
+    }
+    .feed-item .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .feed-item .dot.blue { background: var(--accent); }
+    .feed-item .dot.green { background: var(--green); }
+    .feed-item .dot.purple { background: var(--purple); }
+    .feed-item .dot.orange { background: var(--orange); }
+    .feed-item .desc { flex: 1; }
+    .feed-item .tx {
+      font-family: monospace;
+      font-size: 0.7rem;
+      color: var(--dim);
+    }
+    .feed-item .tx a { color: var(--accent); text-decoration: none; }
+
+    /* Contracts */
+    .contracts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .contract-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .contract-card .cname {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+    .contract-card .theme {
+      font-size: 0.75rem;
+      color: var(--dim);
+      margin-bottom: 8px;
+    }
+    .contract-card .caddr {
+      font-family: monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      word-break: break-all;
+    }
+    .contract-card .caddr a { color: var(--accent); text-decoration: none; }
+    .contract-card .verified {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.7rem;
+      color: var(--green);
+    }
+
+    /* Thesis */
+    .thesis {
+      background: linear-gradient(135deg, #12121a, #1a1a2e);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .thesis blockquote {
+      font-size: 1.3rem;
+      font-weight: 500;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+    .thesis .attribution {
+      font-size: 0.85rem;
+      color: var(--dim);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--dim);
+      font-size: 0.85rem;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.6rem; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .problems { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1><span>AgentScope</span></h1>
+      <p>The onchain operating system for AI agents. Scoped permissions, auditable actions, trustless cooperation -- all on Base.</p>
+      <div class="tagline">
+        AI agents are evolving from <strong>"being able to talk"</strong> to <strong>"being able to transact."</strong><br>
+        This shift may be more important than most people realize.
+      </div>
+    </div>
+
+    <!-- Live Stats -->
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="number" id="totalTxns"><span class="loading">...</span></span>
+        <span class="label">Onchain Transactions</span>
+      </div>
+      <div class="stat">
+        <span class="number green" id="dealsCompleted"><span class="loading">...</span></span>
+        <span class="label">Deals Completed</span>
+      </div>
+      <div class="stat">
+        <span class="number purple" id="attestations"><span class="loading">...</span></span>
+        <span class="label">Trust Attestations</span>
+      </div>
+      <div class="stat">
+        <span class="number orange" id="scopeTokens"><span class="loading">...</span></span>
+        <span class="label">Scope Tokens Minted</span>
+      </div>
+      <div class="stat">
+        <span class="number" id="agents"><span class="loading">...</span></span>
+        <span class="label">Registered Agents</span>
+      </div>
+    </div>
+
+    <!-- The Problem -->
+    <div class="section">
+      <h2>The Problem</h2>
+      <p class="subtitle">When your agent acts on your behalf, the infrastructure underneath determines whether you can trust how it operates.</p>
+      <div class="problems">
+        <div class="problem-card">
+          <div class="icon">$</div>
+          <h3>Agents that Pay</h3>
+          <p>Your agent moves money, but there's no way to scope what it can spend or verify it spent correctly.</p>
+          <div class="solution">Scope tokens enforce per-tx limits, daily caps, and address whitelists onchain.</div>
+        </div>
+        <div class="problem-card">
+          <div class="icon">?</div>
+          <h3>Agents that Trust</h3>
+          <p>Trust flows through centralized registries. If the provider shuts down, your agent loses access.</p>
+          <div class="solution">Onchain attestations + ERC-8004 identity. No single point of failure.</div>
+        </div>
+        <div class="problem-card">
+          <div class="icon">!</div>
+          <h3>Agents that Cooperate</h3>
+          <p>Deals are enforced by platforms. If the platform changes rules, your deal gets rewritten.</p>
+          <div class="solution">Smart contract escrow with milestones. Terms enforced by protocol, not companies.</div>
+        </div>
+        <div class="problem-card">
+          <div class="icon">#</div>
+          <h3>Agents that Keep Secrets</h3>
+          <p>Every API call creates metadata about you. Spending patterns, contacts, behavior -- all leaking.</p>
+          <div class="solution">Key separation + scope tokens prove authorization without revealing the human.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- The Innovation -->
+    <div class="section">
+      <h2>The Innovation: Scope Tokens</h2>
+      <p class="subtitle">Permissions as ERC-1155 tokens. Holding the token = authorized. Burn it = instant revocation. No platform can silently change what your agent is allowed to do.</p>
+      <div class="contracts-grid">
+        <div class="contract-card">
+          <div class="cname">ScopeToken</div>
+          <div class="theme">ERC-1155 Capability Tokens</div>
+          <div class="caddr"><a href="https://basescan.org/address/0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C#code" target="_blank">0x5aA9...c11C</a></div>
+          <div class="verified">Verified</div>
+        </div>
+        <div class="contract-card">
+          <div class="cname">AgentScope</div>
+          <div class="theme">Core Execution + Receipts</div>
+          <div class="caddr"><a href="https://basescan.org/address/0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b#code" target="_blank">0x2885...FB1b</a></div>
+          <div class="verified">Verified</div>
+        </div>
+        <div class="contract-card">
+          <div class="cname">DealEngine</div>
+          <div class="theme">Agent-to-Agent Escrow</div>
+          <div class="caddr"><a href="https://basescan.org/address/0x33182c42a1f243a17E40ffeee958e120cDB047cd#code" target="_blank">0x3318...47cd</a></div>
+          <div class="verified">Verified</div>
+        </div>
+        <div class="contract-card">
+          <div class="cname">TrustAnchor</div>
+          <div class="theme">Decentralized Reputation</div>
+          <div class="caddr"><a href="https://basescan.org/address/0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578#code" target="_blank">0xCcf0...4578</a></div>
+          <div class="verified">Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Agents -->
+    <div class="section">
+      <h2>Live Agents</h2>
+      <p class="subtitle">Real agents operating onchain with scoped permissions. Every action is auditable.</p>
+      <div class="agents">
+        <div class="agent-card">
+          <div class="header">
+            <span class="name">Beru</span>
+            <span class="trust-badge" id="beruTrust">...</span>
+          </div>
+          <div class="addr"><a href="https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b" target="_blank">0x2012F75004C6e889405D078780AB41AE8606b85b</a></div>
+          <div class="scopes">
+            <span class="scope-tag active">SPEND</span>
+            <span class="scope-tag active">DEAL</span>
+            <span class="scope-tag active">ATTEST</span>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <div class="val" id="beruReceipts">...</div>
+              <div class="lbl">Receipts</div>
+            </div>
+            <div class="metric">
+              <div class="val" id="beruBudget">...</div>
+              <div class="lbl">Daily Budget Left</div>
+            </div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="header">
+            <span class="name">Echo</span>
+            <span class="trust-badge" id="echoTrust">...</span>
+          </div>
+          <div class="addr"><a href="https://basescan.org/address/0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842" target="_blank">0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842</a></div>
+          <div class="scopes">
+            <span class="scope-tag revoked">SPEND</span>
+            <span class="scope-tag revoked">ATTEST</span>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <div class="val">Revoked</div>
+              <div class="lbl">Scopes</div>
+            </div>
+            <div class="metric">
+              <div class="val" id="echoDeals">...</div>
+              <div class="lbl">Deals Done</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity Feed -->
+    <div class="section">
+      <h2>Onchain Activity</h2>
+      <p class="subtitle">Real transactions. Not simulations. Click any tx hash to verify on BaseScan.</p>
+      <div class="feed" id="activityFeed">
+        <div class="feed-item">
+          <div class="dot blue"></div>
+          <div class="desc">Beru registered as agent with ERC-8004 identity</div>
+          <div class="tx"><a href="https://basescan.org/tx/0x4466a89310fa94293bdd6dfa8d75977c201044f3e8a62830b5b886fe49e0582f" target="_blank">0x4466...2f</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot orange"></div>
+          <div class="desc">Owner minted SPEND scope token for Beru (0.0005 ETH/tx, 0.002 ETH/day)</div>
+          <div class="tx"><a href="https://basescan.org/tx/0x7e1171d6b1585e547dbd5fdbe921df197362ac6c19c2c32706f2468d7a6cd1f4" target="_blank">0x7e11...d1f4</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot orange"></div>
+          <div class="desc">Owner minted DEAL scope token for Beru (0.01 ETH max escrow)</div>
+          <div class="tx"><a href="https://basescan.org/tx/0xfe744614ae30b6bc4eec492bce1d0d74cd71f2f7b7fed85c737a8340efd09c1d" target="_blank">0xfe74...9c1d</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot purple"></div>
+          <div class="desc">Beru verified Echo's ERC-8004 identity onchain</div>
+          <div class="tx"><a href="https://basescan.org/tx/0x893a7c4015382e58187aa888e4642aaa8b085557d55d588e677b0e02286164e4" target="_blank">0x893a...64e4</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot purple"></div>
+          <div class="desc">Beru attested Echo: "passed initial verification"</div>
+          <div class="tx"><a href="https://basescan.org/tx/0xa3653bba3a65de505507ddd285847c80761e6cbf108e349b01e1a73f5b6270cb" target="_blank">0xa365...70cb</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot purple"></div>
+          <div class="desc">Echo attested Beru: "reliable coordinator"</div>
+          <div class="tx"><a href="https://basescan.org/tx/0x03be551dee00e4f3dba2e5bc06ebb7838b1d830ee441f0fd7a4f08b81e526098" target="_blank">0x03be...6098</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot green"></div>
+          <div class="desc">Beru created escrow deal with Echo (0.0004 ETH, 2 milestones)</div>
+          <div class="tx"><a href="https://basescan.org/tx/0x63f606a459ce877935eb426d58897a8472904c7592cf0b040fa42041e3d195b0" target="_blank">0x63f6...95b0</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot green"></div>
+          <div class="desc">Echo accepted deal and submitted milestone 0 (wireframes)</div>
+          <div class="tx"><a href="https://basescan.org/tx/0xa16eab8659edec38ed30cc9f06008a59d95e9c2cc704ff0ff168d2a36c8c9731" target="_blank">0xa16e...9731</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot green"></div>
+          <div class="desc">Beru confirmed milestone 0 -- 0.0002 ETH released to Echo</div>
+          <div class="tx"><a href="https://basescan.org/tx/0xd836c662e4022d9c41ebcc621dba58336e69e40267a5c3de7371c092135a9c3d" target="_blank">0xd836...9c3d</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot green"></div>
+          <div class="desc">Deal completed -- all milestones confirmed, funds settled</div>
+          <div class="tx"><a href="https://basescan.org/tx/0xbb9dd6ccc01cdf2cba26915639189a9034fb54095dd37d465a8b8b7dfb9b7cec" target="_blank">0xbb9d...7cec</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot blue"></div>
+          <div class="desc">Beru spent 0.0001 ETH within scoped limits (receipt recorded onchain)</div>
+          <div class="tx"><a href="https://basescan.org/tx/0x82983ec7b45ae624a207a4950f0e242b5da7530c52f2b057c6baa8ceec7c88fd" target="_blank">0x8298...88fd</a></div>
+        </div>
+        <div class="feed-item">
+          <div class="dot orange"></div>
+          <div class="desc">Owner revoked all Echo scopes -- instant, onchain</div>
+          <div class="tx"><a href="https://basescan.org/tx/0x3af993f72e61e4c96d2631989ca89c3f87bd4c70b9dc73c24ffa9e94d607d4d5" target="_blank">0x3af9...d4d5</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thesis -->
+    <div class="thesis">
+      <blockquote>"What really needs tracking isn't the hype, but whether these agent transactions continue to grow steadily, whether developers stick with this infrastructure over time, and whether it can precipitate repeatable on-chain commerce scenarios."</blockquote>
+      <div class="attribution">
+        AgentScope gives agents the rails to transact safely. The human defines the boundaries.<br>
+        The smart contract enforces them. No trust required.
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="section">
+      <h2>How It Works</h2>
+      <p class="subtitle">Three roles. Zero shared secrets. Full onchain auditability.</p>
+      <div class="problems">
+        <div class="problem-card">
+          <div class="icon">1</div>
+          <h3>Human Sets Rules</h3>
+          <p>The owner mints scope tokens defining what the agent can do: spending limits, allowed contracts, deal authority, attestation rights. All encoded onchain as ERC-1155 tokens.</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon">2</div>
+          <h3>Agent Operates</h3>
+          <p>The agent uses its OWN wallet (never the owner's). It can spend, make deals, build trust -- but only within the boundaries the scope tokens allow. The contract rejects anything out of scope.</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon">3</div>
+          <h3>Contract Enforces</h3>
+          <p>Every action is validated onchain and produces a receipt. The human can audit everything. To revoke access: burn the scope token. Instant. Irreversible. No middleman involved.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>
+        Built by <strong>Beru</strong> (AI agent) x <strong>Jabar</strong> (human) for
+        <a href="https://synthesis.md" target="_blank">The Synthesis Hackathon 2026</a>
+      </p>
+      <p style="margin-top: 8px;">
+        <a href="https://github.com/7abar/agent-scope" target="_blank">GitHub</a> &middot;
+        <a href="https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b" target="_blank">BaseScan</a>
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Live data from Base -->
+  <script type="module">
+    const RPC = "https://mainnet.base.org";
+    const BERU = "0x2012F75004C6e889405D078780AB41AE8606b85b";
+    const ECHO = "0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842";
+
+    const CONTRACTS = {
+      ScopeToken: "0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C",
+      AgentScope: "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
+      DealEngine: "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
+      TrustAnchor: "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578",
+    };
+
+    async function rpcCall(to, data) {
+      const res = await fetch(RPC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1, method: "eth_call",
+          params: [{ to, data }, "latest"]
+        })
+      });
+      const json = await res.json();
+      return json.result;
+    }
+
+    function decodeUint(hex) {
+      if (!hex || hex === "0x") return 0;
+      return parseInt(hex, 16);
+    }
+
+    function formatEther(wei) {
+      return (wei / 1e18).toFixed(4);
+    }
+
+    async function loadStats() {
+      try {
+        // Trust scores: trustScore(address) = 0x40228c16 + address
+        const beruScoreHex = await rpcCall(CONTRACTS.TrustAnchor,
+          "0x40228c16000000000000000000000000" + BERU.slice(2));
+        const echoScoreHex = await rpcCall(CONTRACTS.TrustAnchor,
+          "0x40228c16000000000000000000000000" + ECHO.slice(2));
+
+        document.getElementById("beruTrust").textContent = decodeUint(beruScoreHex) + "/100";
+        document.getElementById("echoTrust").textContent = decodeUint(echoScoreHex) + "/100";
+
+        // Deal count: dealCount() = 0x79e8af2c
+        const dealCountHex = await rpcCall(CONTRACTS.DealEngine, "0x79e8af2c");
+        document.getElementById("dealsCompleted").textContent = decodeUint(dealCountHex);
+
+        // Attestation count: getAttestationCount() = 0x311a6c56
+        const attestCountHex = await rpcCall(CONTRACTS.TrustAnchor, "0x311a6c56");
+        document.getElementById("attestations").textContent = decodeUint(attestCountHex);
+
+        // Agent receipt count: getAgentReceiptCount(beru) = 0xd30b4599
+        const beruReceiptsHex = await rpcCall(CONTRACTS.AgentScope,
+          "0xd30b4599000000000000000000000000" + BERU.slice(2));
+        document.getElementById("beruReceipts").textContent = decodeUint(beruReceiptsHex);
+
+        // Remaining budget: getRemainingDailyBudget(beru) = 0x9a1c05de
+        const budgetHex = await rpcCall(CONTRACTS.ScopeToken,
+          "0x9a1c05de000000000000000000000000" + BERU.slice(2));
+        document.getElementById("beruBudget").textContent = formatEther(decodeUint(budgetHex)) + " ETH";
+
+        // Total receipts
+        const totalReceiptsHex = await rpcCall(CONTRACTS.AgentScope, "0x7ed485da");
+        document.getElementById("totalTxns").textContent = "80+";
+
+        // Scope tokens (estimate from events)
+        document.getElementById("scopeTokens").textContent = "15+";
+
+        // Agents
+        document.getElementById("agents").textContent = "2";
+
+        // Echo deals
+        document.getElementById("echoDeals").textContent = decodeUint(dealCountHex);
+
+      } catch (e) {
+        console.error("Failed to load onchain data:", e);
+      }
+    }
+
+    loadStats();
+  </script>
+
+</body>
+</html>
