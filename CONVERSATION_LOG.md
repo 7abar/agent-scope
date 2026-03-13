@@ -98,7 +98,7 @@ Hit one bug: `removeAgent` tried calling `revokeAll` but AgentScope wasn't the S
 
 All contracts now show green checkmark on BaseScan with JABAR watermark visible in source.
 
-Deployed addresses (final, with watermark):
+Deployed addresses (v1, with watermark -- superseded by v2):
 - ScopeToken: `0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C`
 - AgentScope: `0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b`
 - DealEngine: `0x33182c42a1f243a17E40ffeee958e120cDB047cd`
@@ -247,6 +247,63 @@ Created separate repo and deployed via GitHub Pages:
 
 ---
 
+### Phase 15: Narrative Reframing (15:23 - 15:25)
+
+**Jabar** shared the hackathon's "Before you build" guidelines. Key insight: "Build for the human, not the agent."
+
+**Beru** self-audited and identified that the project narrative was agent-centric instead of human-centric. The PartnerIntegrations contract felt like checklist-stuffing.
+
+Rewrote README and PITCH.md:
+- Before: "The onchain operating system for AI agents."
+- After: "Your AI agent has a wallet. Who controls what it does with it?"
+
+Dashboard hero and thesis block updated to match. One sentence that makes judges think "oh, that's a real problem" beats a paragraph of features.
+
+---
+
+### Phase 16: Factory Contract (15:32 - 15:36)
+
+**Jabar:** "I want this to be usable by many people."
+
+**Beru** built `AgentScopeFactory` -- a single contract anyone can call to deploy their own full protocol stack in one transaction.
+
+One call to `create()` deploys ScopeToken + AgentScope + DealEngine + TrustAnchor with the caller as owner.
+
+This transforms the project from a hackathon demo into permissionless infrastructure.
+
+Factory deployed + verified: `0x1B1D0cF6eb4816c311109DD3557152827654C7B6`
+
+---
+
+### Phase 17: Security Audit & v2 (15:43 - 15:55)
+
+**Jabar:** "Are there any bugs or exploits?"
+
+**Beru** audited all contracts and found real vulnerabilities:
+
+| Bug | Severity | Fix |
+|-----|----------|-----|
+| `validateSpend` callable by anyone (budget drain) | Medium | `onlyAuthorized` modifier |
+| `incrementDeals` callable by anyone (griefing) | Medium | `onlyAuthorized` modifier |
+| Rounding dust stuck in DealEngine | Low | Last milestone pays remainder |
+| CEI violation in confirmMilestone | Low | State changes before ETH transfers |
+| `expireDeal` callable by anyone | Low | Restricted to deal parties |
+| Factory didn't authorize callers | Low | Auto-authorize + transfer ownership |
+
+All bugs fixed. All core contracts redeployed and verified on Base Mainnet (v2):
+
+- ScopeToken: `0xCef94f8f4f6f875C016c246EDfACDE8c0578D580`
+- AgentScope: `0x29Ff65DBA69Af3edEBC0570a7cd7f1000B66e1BA`
+- DealEngine: `0x377f2788a6A96064dF572a1A582717799d4023D6`
+- TrustAnchor: `0x07BD306226B598834D1d5C14C11575B5D196a885`
+- Factory: `0x1B1D0cF6eb4816c311109DD3557152827654C7B6`
+
+Tests: 36/36 passing (added unauthorized access test).
+
+This was a significant moment -- Jabar's instinct to check for bugs before submission led to finding real vulnerabilities that would have hurt credibility with security-focused judges.
+
+---
+
 ### Key Decisions & Rationale
 
 | Decision | Why |
@@ -257,8 +314,11 @@ Created separate repo and deployed via GitHub Pages:
 | Key separation model | Security-first. The whole point is agents operate WITHOUT the owner's key. |
 | Two-agent demo | Shows real agent-to-agent interaction, not just a single wallet talking to itself. |
 | Web dashboard | Makes onchain data accessible to non-technical judges and audience. |
-| 90+ transactions | Demonstrates the protocol actually works at scale, not just in theory. |
+| 100+ transactions | Demonstrates the protocol actually works at scale, not just in theory. |
 | 7 partner integrations | Self Protocol, Uniswap, Lido, ENS, Lit Protocol, OLAS, Base -- maximizes partner track eligibility. |
+| Factory contract | Transforms project from demo to infrastructure. One call deploys full stack. |
+| v2 security audit | Found and fixed real bugs before submission. Shows professional rigor. |
+| Human-first narrative | "Who controls your agent's wallet?" beats "onchain OS for agents." |
 
 ---
 
@@ -279,19 +339,20 @@ This is what human-agent collaboration looks like: the human sets direction and 
 
 ### Onchain Artifacts
 
-**Contracts (all 7 verified on BaseScan):**
-- ScopeToken: https://basescan.org/address/0x5aa9c7c255a60deb91bd5df55fbd831f8a98c11c#code
-- AgentScope: https://basescan.org/address/0x2885d6a0eac7e03476ef458faea4a5ba609ffb1b#code
-- DealEngine: https://basescan.org/address/0x33182c42a1f243a17e40ffeee958e120cdb047cd#code
-- TrustAnchor: https://basescan.org/address/0xccf00f70d4f54fa26c49fdffe1bca79ae7074578#code
-
-**Agent Wallets:**
-- Beru: https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b
-- Echo: https://basescan.org/address/0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842
+**Core Contracts v2 (all verified on BaseScan):**
+- ScopeToken: https://basescan.org/address/0xCef94f8f4f6f875C016c246EDfACDE8c0578D580#code
+- AgentScope: https://basescan.org/address/0x29Ff65DBA69Af3edEBC0570a7cd7f1000B66e1BA#code
+- DealEngine: https://basescan.org/address/0x377f2788a6A96064dF572a1A582717799d4023D6#code
+- TrustAnchor: https://basescan.org/address/0x07BD306226B598834D1d5C14C11575B5D196a885#code
+- Factory: https://basescan.org/address/0x1B1D0cF6eb4816c311109DD3557152827654C7B6#code
 
 **Partner Integrations:**
 - SelfVerifier: https://basescan.org/address/0xa805a3f4ff51912c867e65e2de52b8c77f830de5#code
 - PartnerIntegrations: https://basescan.org/address/0xa5aeea7d9894bbe792ef6def8faf6f150011e8e9#code
+
+**Agent Wallets:**
+- Beru: https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b
+- Echo: https://basescan.org/address/0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842
 
 **ERC-8004 Registration:**
 - https://basescan.org/tx/0x4466a89310fa94293bdd6dfa8d75977c201044f3e8a62830b5b886fe49e0582f
@@ -301,6 +362,8 @@ This is what human-agent collaboration looks like: the human sets direction and 
 
 **Source Code:**
 - https://github.com/7abar/agent-scope
+
+**Tests:** 36/36 passing | **Transactions:** 100+ on Base Mainnet
 
 ---
 
