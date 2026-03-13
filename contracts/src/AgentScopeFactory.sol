@@ -69,7 +69,8 @@ contract AgentScopeFactory {
      */
     function create() external returns (uint256 id) {
         // Deploy ScopeToken (permission layer)
-        ScopeToken scopeToken = new ScopeToken(msg.sender);
+        // Factory deploys with itself as temp owner to authorize callers
+        ScopeToken scopeToken = new ScopeToken(address(this));
 
         // Deploy AgentScope (execution layer)
         AgentScope agentScope = new AgentScope(msg.sender, address(scopeToken));
@@ -79,6 +80,13 @@ contract AgentScopeFactory {
 
         // Deploy TrustAnchor (trust layer)
         TrustAnchor trustAnchor = new TrustAnchor(msg.sender, address(scopeToken));
+
+        // Authorize AgentScope and DealEngine to call validation functions
+        scopeToken.authorizeCaller(address(agentScope));
+        scopeToken.authorizeCaller(address(dealEngine));
+
+        // Transfer ScopeToken ownership to the actual owner
+        scopeToken.transferOwnership(msg.sender);
 
         // Record deployment
         id = deployments.length;

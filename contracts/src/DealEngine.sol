@@ -142,33 +142,49 @@ contract DealEngine {
         m.confirmed = true;
         d.milestonesCompleted++;
 
-        uint256 payout = d.amount / d.milestoneCount;
-        (bool ok,) = d.counterparty.call{value: payout}("");
-        require(ok, "DealEngine: payout failed");
-
-        emit MilestoneConfirmed(id, idx, payout);
-
+        // Fix rounding: last milestone gets the remainder to prevent dust
+        uint256 payout;
         if (d.milestonesCompleted == d.milestoneCount) {
+            // Last milestone: pay remaining balance (prevents dust)
+            uint256 alreadyPaid = (d.amount / d.milestoneCount) * (d.milestoneCount - 1);
+            payout = d.amount - alreadyPaid;
+
+            // CEI: update state before external call
             d.status = Status.Completed;
             if (address(scopeToken) != address(0)) {
                 scopeToken.decrementDeals(d.initiator);
             }
+
+            (bool ok,) = d.counterparty.call{value: payout}("");
+            require(ok, "DealEngine: payout failed");
+
+            emit MilestoneConfirmed(id, idx, payout);
             emit DealCompleted(id);
+        } else {
+            payout = d.amount / d.milestoneCount;
+
+            (bool ok,) = d.counterparty.call{value: payout}("");
+            require(ok, "DealEngine: payout failed");
+
+            emit MilestoneConfirmed(id, idx, payout);
         }
     }
 
     function expireDeal(uint256 id) external {
         Deal storage d = deals[id];
+        require(msg.sender == d.initiator || msg.sender == d.counterparty, "DealEngine: not party");
         require(block.timestamp > d.deadline, "DealEngine: not expired");
         require(d.status == Status.Created || d.status == Status.Active, "DealEngine: wrong status");
 
+        uint256 paid = (d.amount / d.milestoneCount) * d.milestonesCompleted;
+        uint256 refund = d.amount - paid;
+
+        // CEI: update state before external call
         d.status = Status.Expired;
         if (address(scopeToken) != address(0)) {
             scopeToken.decrementDeals(d.initiator);
         }
 
-        uint256 paid = (d.amount / d.milestoneCount) * d.milestonesCompleted;
-        uint256 refund = d.amount - paid;
         if (refund > 0) {
             (bool ok,) = d.initiator.call{value: refund}("");
             require(ok, "DealEngine: refund failed");
@@ -182,12 +198,15 @@ contract DealEngine {
         require(msg.sender == d.initiator, "DealEngine: not initiator");
         require(d.status == Status.Created, "DealEngine: cannot cancel");
 
+        uint256 refundAmount = d.amount;
+
+        // CEI: update state before external call
         d.status = Status.Cancelled;
         if (address(scopeToken) != address(0)) {
             scopeToken.decrementDeals(d.initiator);
         }
 
-        (bool ok,) = d.initiator.call{value: d.amount}("");
+        (bool ok,) = d.initiator.call{value: refundAmount}("");
         require(ok, "DealEngine: refund failed");
 
         emit DealCancelled(id);

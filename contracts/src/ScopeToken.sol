@@ -70,10 +70,15 @@ contract ScopeToken {
     // Deal tracking
     mapping(address => uint256) public activeDeals;
 
+    // Authorized callers (AgentScope, DealEngine) for validation functions
+    mapping(address => bool) public authorizedCallers;
+
     // --- Events ---
     event ScopeGranted(address indexed agent, uint256 indexed scopeId);
     event ScopeRevoked(address indexed agent, uint256 indexed scopeId);
     event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
+    event CallerAuthorized(address indexed caller);
+    event CallerDeauthorized(address indexed caller);
 
     // --- Modifiers ---
     modifier onlyOwner() {
@@ -81,10 +86,32 @@ contract ScopeToken {
         _;
     }
 
+    modifier onlyAuthorized() {
+        require(authorizedCallers[msg.sender] || msg.sender == owner, "ScopeToken: not authorized");
+        _;
+    }
+
     // --- Constructor ---
     constructor(address _owner) {
         require(_owner != address(0), "ScopeToken: zero owner");
         owner = _owner;
+    }
+
+    // --- Access Control ---
+
+    function authorizeCaller(address caller) external onlyOwner {
+        authorizedCallers[caller] = true;
+        emit CallerAuthorized(caller);
+    }
+
+    function deauthorizeCaller(address caller) external onlyOwner {
+        authorizedCallers[caller] = false;
+        emit CallerDeauthorized(caller);
+    }
+
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "ScopeToken: zero owner");
+        owner = newOwner;
     }
 
     // --- Grant Scopes ---
@@ -151,7 +178,7 @@ contract ScopeToken {
 
     // --- Validation (called by AgentScope core) ---
 
-    function validateSpend(address agent, uint256 value) external returns (bool) {
+    function validateSpend(address agent, uint256 value) external onlyAuthorized returns (bool) {
         if (balanceOf[agent][SCOPE_SPEND] == 0) return false;
 
         SpendScope memory scope = spendScopes[agent];
@@ -197,11 +224,11 @@ contract ScopeToken {
         return true;
     }
 
-    function incrementDeals(address agent) external {
+    function incrementDeals(address agent) external onlyAuthorized {
         activeDeals[agent]++;
     }
 
-    function decrementDeals(address agent) external {
+    function decrementDeals(address agent) external onlyAuthorized {
         if (activeDeals[agent] > 0) activeDeals[agent]--;
     }
 

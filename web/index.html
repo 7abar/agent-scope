@@ -831,7 +831,7 @@
           <div class="ds-content">
             <h4>Call the Factory</h4>
             <div class="code-block">
-              <code>cast send 0x4440e2137e9F4857453a1a213AdD7CD174054de5 "create()" \<br>
+              <code>cast send 0x1B1D0cF6eb4816c311109DD3557152827654C7B6 "create()" \<br>
               &nbsp;&nbsp;--rpc-url https://mainnet.base.org \<br>
               &nbsp;&nbsp;--private-key YOUR_KEY</code>
             </div>
@@ -867,7 +867,7 @@
       <div class="deploy-info">
         <div class="di-row">
           <span class="di-label">Factory Contract</span>
-          <a href="https://basescan.org/address/0x4440e2137e9f4857453a1a213add7cd174054de5#code" target="_blank" class="di-value mono">0x4440...4de5</a>
+          <a href="https://basescan.org/address/0x1b1d0cf6eb4816c311109dd3557152827654c7b6#code" target="_blank" class="di-value mono">0x1B1D...7B6</a>
         </div>
         <div class="di-row">
           <span class="di-label">Total Deployments</span>
@@ -936,7 +936,7 @@
         <h4>AgentScopeFactory</h4>
         <div class="c-desc">One-click deployment. Call <code style="color:var(--green)">create()</code> to deploy your own full protocol stack. Permissionless, gas only.</div>
         <div class="c-addr">
-          <a href="https://basescan.org/address/0x4440e2137e9f4857453a1a213add7cd174054de5#code" target="_blank">0x4440...4de5</a>
+          <a href="https://basescan.org/address/0x1b1d0cf6eb4816c311109dd3557152827654c7b6#code" target="_blank">0x1B1D...7B6</a>
           <span class="c-verified">VERIFIED</span>
         </div>
       </div>
@@ -945,7 +945,7 @@
         <h4>ScopeToken</h4>
         <div class="c-desc">ERC-1155 capability tokens. Each token ID is a permission type: SPEND, INTERACT, DEAL, ATTEST.</div>
         <div class="c-addr">
-          <a href="https://basescan.org/address/0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C#code" target="_blank">0x5aA9...c11C</a>
+          <a href="https://basescan.org/address/0xCef94f8f4f6f875C016c246EDfACDE8c0578D580#code" target="_blank">0xCef9...D580</a>
           <span class="c-verified">VERIFIED</span>
         </div>
       </div>
@@ -954,7 +954,7 @@
         <h4>AgentScope</h4>
         <div class="c-desc">Core execution engine. Routes agent actions through scope validation and records onchain receipts.</div>
         <div class="c-addr">
-          <a href="https://basescan.org/address/0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b#code" target="_blank">0x2885...FB1b</a>
+          <a href="https://basescan.org/address/0x29Ff65DBA69Af3edEBC0570a7cd7f1000B66e1BA#code" target="_blank">0x29Ff...e1BA</a>
           <span class="c-verified">VERIFIED</span>
         </div>
       </div>
@@ -963,7 +963,7 @@
         <h4>DealEngine</h4>
         <div class="c-desc">Milestone-based escrow for agent-to-agent deals. Locked ETH releases as milestones are confirmed.</div>
         <div class="c-addr">
-          <a href="https://basescan.org/address/0x33182c42a1f243a17E40ffeee958e120cDB047cd#code" target="_blank">0x3318...47cd</a>
+          <a href="https://basescan.org/address/0x377f2788a6A96064dF572a1A582717799d4023D6#code" target="_blank">0x377f...23D6</a>
           <span class="c-verified">VERIFIED</span>
         </div>
       </div>
@@ -972,7 +972,7 @@
         <h4>TrustAnchor</h4>
         <div class="c-desc">Decentralized reputation. Attestations build trust scores (0-100) from real onchain interactions.</div>
         <div class="c-addr">
-          <a href="https://basescan.org/address/0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578#code" target="_blank">0xCcf0...4578</a>
+          <a href="https://basescan.org/address/0x07BD306226B598834D1d5C14C11575B5D196a885#code" target="_blank">0x07BD...a885</a>
           <span class="c-verified">VERIFIED</span>
         </div>
       </div>
@@ -1217,10 +1217,10 @@
   const BERU = "0x2012F75004C6e889405D078780AB41AE8606b85b";
   const ECHO = "0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842";
   const C = {
-    ScopeToken: "0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C",
-    AgentScope: "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
-    DealEngine: "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
-    TrustAnchor: "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578",
+    ScopeToken: "0xCef94f8f4f6f875C016c246EDfACDE8c0578D580",
+    AgentScope: "0x29Ff65DBA69Af3edEBC0570a7cd7f1000B66e1BA",
+    DealEngine: "0x377f2788a6A96064dF572a1A582717799d4023D6",
+    TrustAnchor: "0x07BD306226B598834D1d5C14C11575B5D196a885",
   };
 
   async function rpc(to, data) {
@@ -1238,7 +1238,7 @@
   function dec(hex) { return hex && hex !== "0x" ? parseInt(hex, 16) : 0; }
   function fmtEth(wei) { return (wei / 1e18).toFixed(4); }
 
-  const FACTORY = "0x4440e2137e9F4857453a1a213AdD7CD174054de5";
+  const FACTORY = "0x1B1D0cF6eb4816c311109DD3557152827654C7B6";
 
   async function load() {
     const pad = a => "000000000000000000000000" + a.slice(2);

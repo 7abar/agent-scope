@@ -26,6 +26,10 @@ contract AgentScopeTest is Test {
         dealEngine = new DealEngine(owner, address(scopeToken));
         trustAnchor = new TrustAnchor(owner, address(scopeToken));
 
+        // Authorize AgentScope and DealEngine to call validation functions
+        scopeToken.authorizeCaller(address(agentScope));
+        scopeToken.authorizeCaller(address(dealEngine));
+
         // Fund the AgentScope contract
         vm.deal(address(agentScope), 10 ether);
         vm.deal(address(dealEngine), 0);
@@ -92,23 +96,25 @@ contract AgentScopeTest is Test {
     }
 
     function test_ValidateSpend_Success() public {
-        vm.prank(owner);
+        vm.startPrank(owner);
         scopeToken.grantSpendScope(agent1, 0.1 ether, 1 ether, 0);
 
         bool valid = scopeToken.validateSpend(agent1, 0.05 ether);
         assertTrue(valid);
+        vm.stopPrank();
     }
 
     function test_ValidateSpend_ExceedsPerTx() public {
-        vm.prank(owner);
+        vm.startPrank(owner);
         scopeToken.grantSpendScope(agent1, 0.1 ether, 1 ether, 0);
 
         bool valid = scopeToken.validateSpend(agent1, 0.2 ether);
         assertFalse(valid);
+        vm.stopPrank();
     }
 
     function test_ValidateSpend_ExceedsDaily() public {
-        vm.prank(owner);
+        vm.startPrank(owner);
         scopeToken.grantSpendScope(agent1, 1 ether, 0.5 ether, 0);
 
         // First spend ok
@@ -118,10 +124,11 @@ contract AgentScopeTest is Test {
         // Second spend exceeds daily
         bool valid2 = scopeToken.validateSpend(agent1, 0.3 ether);
         assertFalse(valid2);
+        vm.stopPrank();
     }
 
     function test_ValidateSpend_Expired() public {
-        vm.prank(owner);
+        vm.startPrank(owner);
         scopeToken.grantSpendScope(agent1, 0.1 ether, 1 ether, uint40(block.timestamp + 100));
 
         // Warp past expiry
@@ -129,10 +136,11 @@ contract AgentScopeTest is Test {
 
         bool valid = scopeToken.validateSpend(agent1, 0.05 ether);
         assertFalse(valid);
+        vm.stopPrank();
     }
 
     function test_ValidateSpend_DailyReset() public {
-        vm.prank(owner);
+        vm.startPrank(owner);
         scopeToken.grantSpendScope(agent1, 1 ether, 0.5 ether, 0);
 
         // Spend to daily limit
@@ -144,14 +152,26 @@ contract AgentScopeTest is Test {
         // Should work again
         bool valid = scopeToken.validateSpend(agent1, 0.3 ether);
         assertTrue(valid);
+        vm.stopPrank();
     }
 
     function test_RemainingDailyBudget() public {
-        vm.prank(owner);
+        vm.startPrank(owner);
         scopeToken.grantSpendScope(agent1, 1 ether, 1 ether, 0);
 
         scopeToken.validateSpend(agent1, 0.3 ether);
+        vm.stopPrank();
         assertEq(scopeToken.getRemainingDailyBudget(agent1), 0.7 ether);
+    }
+
+    function test_ValidateSpend_RevertUnauthorized() public {
+        vm.prank(owner);
+        scopeToken.grantSpendScope(agent1, 0.1 ether, 1 ether, 0);
+
+        // Random address tries to call validateSpend -- should revert
+        vm.prank(agent2);
+        vm.expectRevert("ScopeToken: not authorized");
+        scopeToken.validateSpend(agent1, 0.05 ether);
     }
 
     function test_RevertWhen_NonOwnerGrantsScope() public {
@@ -354,6 +374,7 @@ contract AgentScopeTest is Test {
         // Warp past deadline
         vm.warp(block.timestamp + 2 days);
 
+        vm.prank(agent1);
         dealEngine.expireDeal(dealId);
 
         DealEngine.Deal memory d = dealEngine.getDeal(dealId);

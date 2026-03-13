@@ -1,54 +1,37 @@
 {
   "network": "base-mainnet",
   "chainId": 8453,
+  "version": "v2 (bug-fixed)",
   "deployer": "0x2012F75004C6e889405D078780AB41AE8606b85b",
   "contracts": {
-    "AgentScopeFactory": "0x4440e2137e9F4857453a1a213AdD7CD174054de5",
-    "ScopeToken": "0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C",
-    "AgentScope": "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
-    "DealEngine": "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
-    "TrustAnchor": "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578",
+    "AgentScopeFactory": "0x1B1D0cF6eb4816c311109DD3557152827654C7B6",
+    "ScopeToken": "0xCef94f8f4f6f875C016c246EDfACDE8c0578D580",
+    "AgentScope": "0x29Ff65DBA69Af3edEBC0570a7cd7f1000B66e1BA",
+    "DealEngine": "0x377f2788a6A96064dF572a1A582717799d4023D6",
+    "TrustAnchor": "0x07BD306226B598834D1d5C14C11575B5D196a885",
     "SelfVerifier": "0xa805a3f4FF51912c867e65E2de52b8C77f830DE5",
     "PartnerIntegrations": "0xa5aEeA7d9894bbE792eF6dEf8FAF6F150011e8E9"
   },
+  "v2BugFixes": [
+    "ScopeToken: added authorizedCallers -- only AgentScope/DealEngine can call validateSpend/incrementDeals/decrementDeals",
+    "ScopeToken: added transferOwnership for factory deployment pattern",
+    "DealEngine: fixed rounding dust -- last milestone pays remainder",
+    "DealEngine: fixed CEI order -- state changes before ETH transfers in all functions",
+    "DealEngine: expireDeal restricted to deal parties only",
+    "Factory: auto-authorizes AgentScope and DealEngine on ScopeToken, then transfers ownership"
+  ],
   "agents": {
     "Beru": "0x2012F75004C6e889405D078780AB41AE8606b85b",
     "Echo": "0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842"
   },
-  "partnerIntegrations": {
-    "SelfProtocol": {
-      "contract": "SelfVerifier",
-      "description": "ZK proof-of-human verification for agent identity",
-      "selfRegistryOnCelo": "0xaC3DF9ABf80d0F5c020C06B04Cced27763355944"
-    },
-    "Uniswap": {
-      "contract": "PartnerIntegrations",
-      "description": "Scoped token swaps via Uniswap V3 Router",
-      "router": "0x2626664c2603336E57B271c5C0b26F421741e481"
-    },
-    "Lido": {
-      "contract": "PartnerIntegrations",
-      "description": "Vault staking via wstETH",
-      "wstETH": "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452"
-    },
-    "ENS": {
-      "contract": "PartnerIntegrations",
-      "description": "Human-readable agent identity names"
-    },
-    "LitProtocol": {
-      "contract": "PartnerIntegrations",
-      "description": "Encrypted deal terms with selective disclosure"
-    },
-    "OLAS": {
-      "contract": "PartnerIntegrations",
-      "description": "Agent registry compatibility"
-    },
-    "Base": {
-      "description": "All contracts deployed on Base Mainnet"
-    }
+  "v1Contracts": {
+    "ScopeToken": "0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C",
+    "AgentScope": "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
+    "DealEngine": "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
+    "TrustAnchor": "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578",
+    "Factory": "0x4440e2137e9F4857453a1a213AdD7CD174054de5"
   },
-  "verification": "etherscan (BaseScan) - all 8 contracts verified",
-  "watermark": "JABAR - Built by Beru x Jabar for The Synthesis Hackathon 2026",
-  "tests": "35/35 passing",
-  "onchainTransactions": "90+"
+  "verification": "etherscan (BaseScan) - all contracts verified",
+  "tests": "36/36 passing",
+  "onchainTransactions": "100+"
 }

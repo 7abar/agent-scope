@@ -81,7 +81,7 @@ The agent is powerful. The agent is useful. The agent is bounded.
 - 90+ real transactions (not testnet, not simulations)
 - 3 completed escrow deals with milestone payouts
 - 2 registered agents with 100/100 trust scores
-- 35/35 tests passing
+- 35/36 tests passing
 - Live TypeScript SDK
 - Live dashboard at [7abar.github.io/agentscope-dashboard](https://7abar.github.io/agentscope-dashboard/)
 

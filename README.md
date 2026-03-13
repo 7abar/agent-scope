@@ -116,7 +116,7 @@ Call the factory contract on Base Mainnet and get your own full protocol stack:
 
 ```bash
 # Using cast (Foundry)
-cast send 0x4440e2137e9F4857453a1a213AdD7CD174054de5 "create()" \
+cast send 0x1B1D0cF6eb4816c311109DD3557152827654C7B6 "create()" \
   --rpc-url https://mainnet.base.org \
   --private-key YOUR_PRIVATE_KEY
 ```
@@ -129,13 +129,13 @@ One transaction. You get 4 contracts deployed with you as owner:
 
 Gas cost: ~0.002 ETH on Base. No protocol fees. Fully permissionless.
 
-**Factory contract:** [`0x4440e2137e9F4857453a1a213AdD7CD174054de5`](https://basescan.org/address/0x4440e2137e9f4857453a1a213add7cd174054de5#code)
+**Factory contract:** [`0x1B1D0cF6eb4816c311109DD3557152827654C7B6`](https://basescan.org/address/0x1b1d0cf6eb4816c311109dd3557152827654c7b6#code)
 
 ### After Deploying
 
 ```bash
 # 1. Read your deployment addresses from the event log
-cast logs --from-block latest --address 0x4440e2137e9F4857453a1a213AdD7CD174054de5
+cast logs --from-block latest --address 0x1B1D0cF6eb4816c311109DD3557152827654C7B6
 
 # 2. Register your agent
 cast send YOUR_AGENTSCOPE "registerAgent(address,string)" AGENT_ADDRESS "MyAgent" \
@@ -192,11 +192,11 @@ All contracts verified on BaseScan with source code visible.
 
 | Contract | Address | BaseScan |
 |----------|---------|----------|
-| AgentScopeFactory | `0x4440e2137e9F4857453a1a213AdD7CD174054de5` | [View](https://basescan.org/address/0x4440e2137e9f4857453a1a213add7cd174054de5#code) |
-| ScopeToken | `0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C` | [View](https://basescan.org/address/0x5aa9c7c255a60deb91bd5df55fbd831f8a98c11c#code) |
-| AgentScope | `0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b` | [View](https://basescan.org/address/0x2885d6a0eac7e03476ef458faea4a5ba609ffb1b#code) |
-| DealEngine | `0x33182c42a1f243a17E40ffeee958e120cDB047cd` | [View](https://basescan.org/address/0x33182c42a1f243a17e40ffeee958e120cdb047cd#code) |
-| TrustAnchor | `0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578` | [View](https://basescan.org/address/0xccf00f70d4f54fa26c49fdffe1bca79ae7074578#code) |
+| AgentScopeFactory | `0x1B1D0cF6eb4816c311109DD3557152827654C7B6` | [View](https://basescan.org/address/0x1b1d0cf6eb4816c311109dd3557152827654c7b6#code) |
+| ScopeToken | `0xCef94f8f4f6f875C016c246EDfACDE8c0578D580` | [View](https://basescan.org/address/0xcef94f8f4f6f875c016c246edfacde8c0578d580#code) |
+| AgentScope | `0x29Ff65DBA69Af3edEBC0570a7cd7f1000B66e1BA` | [View](https://basescan.org/address/0x29ff65dba69af3edebc0570a7cd7f1000b66e1ba#code) |
+| DealEngine | `0x377f2788a6A96064dF572a1A582717799d4023D6` | [View](https://basescan.org/address/0x377f2788a6a96064df572a1a582717799d4023d6#code) |
+| TrustAnchor | `0x07BD306226B598834D1d5C14C11575B5D196a885` | [View](https://basescan.org/address/0x07bd306226b598834d1d5c14c11575b5d196a885#code) |
 | SelfVerifier | `0xa805a3f4FF51912c867e65E2de52b8C77f830DE5` | [View](https://basescan.org/address/0xa805a3f4ff51912c867e65e2de52b8c77f830de5#code) |
 | PartnerIntegrations | `0xa5aEeA7d9894bbE792eF6dEf8FAF6F150011e8E9` | [View](https://basescan.org/address/0xa5aeea7d9894bbe792ef6def8faf6f150011e8e9#code) |
 
@@ -273,9 +273,26 @@ BERU_PRIVATE_KEY=0x... npm run demo
 
 ---
 
+## Security (v2 Fixes)
+
+We audited the v1 contracts and found real vulnerabilities. All fixed in v2:
+
+| Bug | Severity | Fix |
+|-----|----------|-----|
+| `validateSpend` callable by anyone (budget drain attack) | Medium | Added `onlyAuthorized` modifier -- only AgentScope and DealEngine can call |
+| `incrementDeals` callable by anyone (deal slot griefing) | Medium | Added `onlyAuthorized` modifier |
+| Rounding dust stuck in DealEngine | Low | Last milestone pays remainder instead of equal split |
+| CEI violation in `confirmMilestone` | Low | State changes before ETH transfers in all functions |
+| `expireDeal` callable by anyone (griefing) | Low | Restricted to deal parties only |
+| Factory didn't authorize callers | Low | Factory auto-calls `authorizeCaller` and transfers ownership |
+
+v1 contracts remain on-chain (immutable) but are superseded. v2 addresses are listed below.
+
+---
+
 ## Tests
 
-35 tests covering all flows:
+36 tests covering all flows:
 
 ```bash
 cd contracts && forge test -v
