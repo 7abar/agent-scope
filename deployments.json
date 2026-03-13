@@ -1,0 +1,15 @@
+{
+  "network": "base-mainnet",
+  "chainId": 8453,
+  "deployer": "0x2012F75004C6e889405D078780AB41AE8606b85b",
+  "contracts": {
+    "ScopeToken": "0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C",
+    "AgentScope": "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
+    "DealEngine": "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
+    "TrustAnchor": "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578"
+  },
+  "verification": "sourcify",
+  "watermark": "JABAR - Built by Beru x Jabar for The Synthesis Hackathon 2026",
+  "deployedAt": "2026-03-13",
+  "tests": "35/35 passing"
+}
