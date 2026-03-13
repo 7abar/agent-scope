@@ -202,6 +202,39 @@ All contracts verified on BaseScan with source code visible.
 
 ---
 
+## Uniswap Trading API Integration
+
+AgentScope integrates with the official [Uniswap Developer Platform API](https://developers.uniswap.org) for scope-gated DeFi.
+
+```
+Agent wants to swap ETH -> USDC
+    |
+[1] Check INTERACT + SPEND scope tokens (AgentScope)
+[2] Get quote from Uniswap Trading API (/quote)
+[3] Handle Permit2 approval (/check_approval)
+[4] Execute through AgentScope.interact() -> Uniswap
+[5] Onchain receipt recorded
+```
+
+Every swap goes through AgentScope's permission layer first, then uses Uniswap's routing engine (Classic V2/V3/V4 or UniswapX) for optimal execution with MEV protection.
+
+```typescript
+import { ScopeGatedSwap } from "./uniswap/src/scope-gated-swap.js";
+
+const agent = new ScopeGatedSwap({
+  privateKey: AGENT_KEY,
+  uniswapApiKey: UNISWAP_API_KEY,
+});
+
+// Scope-gated swap: checks permissions, quotes via Uniswap API, executes + receipts
+const result = await agent.swapETHForUSDC("0.0001");
+// result: { success: true, txHash, routing: "CLASSIC", receiptId: 4n }
+```
+
+See [`uniswap/`](./uniswap/) for the full integration module, tests, and demo.
+
+---
+
 ## SDK
 
 TypeScript SDK for any AI agent to interact with AgentScope.
@@ -322,7 +355,7 @@ cd contracts && forge test -v
 
 6. **Minimal trust surface.** No shared keys, no centralized registries, no platform dependency. Trust is enforced by math on Ethereum.
 
-7. **Live partner integration.** Agents execute real Uniswap swaps through AgentScope's scoped permission system. Self Protocol provides ZK identity verification. Additional partner interfaces (Lido, ENS, Lit Protocol, OLAS) demonstrate ecosystem compatibility.
+7. **Live partner integrations.** Uniswap Trading API for scope-gated DeFi (official Developer Platform API, not raw router). Self Protocol for ZK identity verification. Both are production integrations on Base mainnet.
 
 ---
 
@@ -337,3 +370,4 @@ For **The Synthesis Hackathon 2026**
 
 *The first onchain OS for AI agents. Scoped. Auditable. Unstoppable.*
 <!-- v2 Base Mainnet -->
+
