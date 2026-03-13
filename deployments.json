@@ -3,6 +3,7 @@
   "chainId": 8453,
   "deployer": "0x2012F75004C6e889405D078780AB41AE8606b85b",
   "contracts": {
+    "AgentScopeFactory": "0x4440e2137e9F4857453a1a213AdD7CD174054de5",
     "ScopeToken": "0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C",
     "AgentScope": "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
     "DealEngine": "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
@@ -46,7 +47,7 @@
       "description": "All contracts deployed on Base Mainnet"
     }
   },
-  "verification": "etherscan (BaseScan) - all 7 contracts verified",
+  "verification": "etherscan (BaseScan) - all 8 contracts verified",
   "watermark": "JABAR - Built by Beru x Jabar for The Synthesis Hackathon 2026",
   "tests": "35/35 passing",
   "onchainTransactions": "90+"

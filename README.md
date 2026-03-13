@@ -108,12 +108,91 @@ ZK proof-of-human verification integrated with Self Protocol.
 
 ---
 
+## Use It Yourself (One Transaction)
+
+AgentScope is not a demo. It is infrastructure anyone can use.
+
+Call the factory contract on Base Mainnet and get your own full protocol stack:
+
+```bash
+# Using cast (Foundry)
+cast send 0x4440e2137e9F4857453a1a213AdD7CD174054de5 "create()" \
+  --rpc-url https://mainnet.base.org \
+  --private-key YOUR_PRIVATE_KEY
+```
+
+One transaction. You get 4 contracts deployed with you as owner:
+- **ScopeToken** -- mint permissions for your agents
+- **AgentScope** -- execution engine with receipt tracking
+- **DealEngine** -- escrow for agent-to-agent deals
+- **TrustAnchor** -- reputation from real interactions
+
+Cost: ~0.002 ETH on Base. No fees. No approval needed. Fully permissionless.
+
+**Factory contract:** [`0x4440e2137e9F4857453a1a213AdD7CD174054de5`](https://basescan.org/address/0x4440e2137e9f4857453a1a213add7cd174054de5#code)
+
+### After Deploying
+
+```bash
+# 1. Read your deployment addresses from the event log
+cast logs --from-block latest --address 0x4440e2137e9F4857453a1a213AdD7CD174054de5
+
+# 2. Register your agent
+cast send YOUR_AGENTSCOPE "registerAgent(address,string)" AGENT_ADDRESS "MyAgent" \
+  --rpc-url https://mainnet.base.org --private-key OWNER_KEY
+
+# 3. Grant spending permission (e.g., 0.001 ETH/tx, 0.01 ETH/day, no expiry)
+cast send YOUR_SCOPETOKEN \
+  "grantSpendScope(address,uint256,uint256,uint40)" \
+  AGENT_ADDRESS 1000000000000000 10000000000000000 0 \
+  --rpc-url https://mainnet.base.org --private-key OWNER_KEY
+
+# 4. Your agent can now operate within those boundaries
+```
+
+### Why a Factory?
+
+Without the factory, adopting AgentScope means copying 4 contracts, configuring constructor arguments, and deploying them in the right order. Most developers won't do that.
+
+With the factory, it's one function call. The barrier to adoption is as low as it can get.
+
+---
+
+## How ScopeToken Actually Works
+
+ScopeToken is not "just a token." It is a token with enforcement logic.
+
+```
+Agent wants to send 0.001 ETH
+    |
+    v
+AgentScope asks: "Does this agent hold SPEND token?"
+    |
+    v
+ScopeToken checks:
+  - Does the agent have SCOPE_SPEND? (balance > 0)
+  - Is 0.001 ETH within per-tx limit? (maxPerTx)
+  - Is today's total within daily cap? (maxPerDay)
+  - Has the permission expired? (validUntil)
+    |
+    v
+If ALL pass: transaction proceeds, receipt recorded
+If ANY fail: transaction reverts, ETH does not move
+```
+
+A regular ERC-20 token just tracks balances. ScopeToken tracks balances AND enforces rules encoded in the token's associated data. The token is both the proof of permission and the enforcement mechanism.
+
+**Burn the token = instant revocation.** One transaction. No database update. No API call. No waiting period. The agent's next action will be rejected by the contract.
+
+---
+
 ## Deployed on Base Mainnet
 
 All contracts verified on BaseScan with source code visible.
 
 | Contract | Address | BaseScan |
 |----------|---------|----------|
+| AgentScopeFactory | `0x4440e2137e9F4857453a1a213AdD7CD174054de5` | [View](https://basescan.org/address/0x4440e2137e9f4857453a1a213add7cd174054de5#code) |
 | ScopeToken | `0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C` | [View](https://basescan.org/address/0x5aa9c7c255a60deb91bd5df55fbd831f8a98c11c#code) |
 | AgentScope | `0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b` | [View](https://basescan.org/address/0x2885d6a0eac7e03476ef458faea4a5ba609ffb1b#code) |
 | DealEngine | `0x33182c42a1f243a17E40ffeee958e120cDB047cd` | [View](https://basescan.org/address/0x33182c42a1f243a17e40ffeee958e120cdb047cd#code) |
