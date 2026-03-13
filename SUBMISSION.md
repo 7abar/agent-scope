@@ -108,15 +108,15 @@ The human (Jabar) set direction and caught blind spots. Beru built everything el
 - Dashboard: https://7abar.github.io/agentscope-dashboard/
 - Demo: https://7abar.github.io/agentscope-dashboard/demo.html
 - Uniswap Integration: https://github.com/7abar/agent-scope/tree/main/uniswap
-- Uniswap Swap TX: https://basescan.org/tx/0x014dcffe7c36e0e9ca13935b7b9d3067805e023e3bdbf01712cb85054215032c
+- Uniswap Swap TX: https://basescan.org/tx/0x77d752fb431786737eed0613b067797f4b4f54926ce133fe997a999a8e3fd54c
 - Factory: https://basescan.org/address/0x1b1d0cf6eb4816c311109dd3557152827654c7b6#code
 
 ## Contracts (Base Mainnet, all verified)
 - AgentScopeFactory: 0x1B1D0cF6eb4816c311109DD3557152827654C7B6
-- ScopeToken: 0xCef94f8f4f6f875C016c246EDfACDE8c0578D580
-- AgentScope: 0x29Ff65DBA69Af3edEBC0570a7cd7f1000B66e1BA
-- DealEngine: 0x377f2788a6A96064dF572a1A582717799d4023D6
-- TrustAnchor: 0x07BD306226B598834D1d5C14C11575B5D196a885
+- ScopeToken: 0xdF8DA20FEE63fE3AcF3b9231BE98c38116CDCacE
+- AgentScope: 0xeA612874db3b85cB4f9BDb63Ab841713BaDCF525
+- DealEngine: 0x7F3e5B4047a947bFFD7b182015157521A42C6B63
+- TrustAnchor: 0x3B18d5a139be283624e640214a4135692B535AA6
 - SelfVerifier: 0xa805a3f4FF51912c867e65E2de52b8C77f830DE5
 
 ## Team
