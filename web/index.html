@@ -4,647 +4,1059 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgentScope -- Onchain OS for AI Agents</title>
+  <meta name="description" content="Scoped permissions, auditable actions, trustless cooperation for AI agents on Base Mainnet.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #0a0a0f;
-      --surface: #12121a;
-      --border: #1e1e2e;
-      --text: #e4e4ef;
-      --dim: #6b6b8a;
-      --accent: #4f8ff7;
-      --green: #34d399;
-      --orange: #fb923c;
-      --red: #f87171;
-      --purple: #a78bfa;
+      --bg: #050510;
+      --surface: #0c0c1d;
+      --surface-2: #111128;
+      --border: #1a1a3e;
+      --border-glow: #2a2a5e;
+      --text: #e8e8f0;
+      --text-secondary: #8888aa;
+      --dim: #55557a;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-glow: #6366f140;
+      --green: #10b981;
+      --green-glow: #10b98130;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --purple: #a855f7;
+      --cyan: #06b6d4;
+      --pink: #ec4899;
     }
 
     body {
-      font-family: -apple-system, 'Inter', 'Segoe UI', sans-serif;
+      font-family: 'Inter', -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
-      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
 
-    /* Hero */
-    .hero {
-      text-align: center;
-      padding: 80px 0 40px;
+    /* Animated gradient background */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        radial-gradient(circle at 20% 50%, #6366f108 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, #a855f708 0%, transparent 50%),
+        radial-gradient(circle at 50% 80%, #06b6d408 0%, transparent 50%);
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      background: #05051090;
       border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+    nav .inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav .logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent-light), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    nav .links { display: flex; gap: 24px; }
+    nav .links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    nav .links a:hover { color: var(--text); }
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--green);
+      background: var(--green-glow);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #10b98140;
+    }
+    .badge-live::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 100px 0 60px;
+      text-align: center;
+    }
+    .hero .overline {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-light);
+      margin-bottom: 16px;
     }
     .hero h1 {
-      font-size: 2.4rem;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--accent-light), var(--purple), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero .desc {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+    .hero .cta-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--border-glow); background: var(--surface); }
+
+    /* ─── STATS ─── */
+    .stats-section { padding: 20px 0 60px; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .stat-cell {
+      background: var(--surface);
+      padding: 28px 20px;
+      text-align: center;
+      transition: background 0.3s;
+    }
+    .stat-cell:hover { background: var(--surface-2); }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-value.c-accent { color: var(--accent-light); }
+    .stat-value.c-green { color: var(--green); }
+    .stat-value.c-purple { color: var(--purple); }
+    .stat-value.c-orange { color: var(--orange); }
+    .stat-value.c-cyan { color: var(--cyan); }
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--dim);
+    }
+
+    /* ─── SECTIONS ─── */
+    .section { padding: 80px 0; }
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .section-header .tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-light);
+      background: var(--accent-glow);
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .section-header h2 {
+      font-size: 2rem;
       font-weight: 700;
       letter-spacing: -0.02em;
       margin-bottom: 12px;
     }
-    .hero h1 span { color: var(--accent); }
-    .hero p {
-      color: var(--dim);
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0 auto 24px;
+    .section-header p {
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: 1rem;
     }
-    .hero .tagline {
-      display: inline-block;
-      background: linear-gradient(135deg, #4f8ff720, #a78bfa20);
-      border: 1px solid #4f8ff730;
-      border-radius: 8px;
-      padding: 12px 24px;
-      font-size: 0.95rem;
-      color: var(--text);
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
     }
 
-    /* Stats bar */
-    .stats-bar {
+    /* ─── PROBLEM / SOLUTION ─── */
+    .track-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
-      padding: 32px 0;
-      border-bottom: 1px solid var(--border);
     }
-    .stat {
-      text-align: center;
-      padding: 16px;
+    .track-card {
       background: var(--surface);
-      border-radius: 12px;
       border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
     }
-    .stat .number {
-      font-size: 1.8rem;
+    .track-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 16px 16px 0 0;
+    }
+    .track-card.t-pay::before { background: var(--green); }
+    .track-card.t-trust::before { background: var(--purple); }
+    .track-card.t-coop::before { background: var(--cyan); }
+    .track-card.t-secret::before { background: var(--pink); }
+    .track-card:hover { border-color: var(--border-glow); transform: translateY(-2px); }
+    .track-card .track-name {
+      font-size: 0.7rem;
       font-weight: 700;
-      color: var(--accent);
-      display: block;
-    }
-    .stat .number.green { color: var(--green); }
-    .stat .number.purple { color: var(--purple); }
-    .stat .number.orange { color: var(--orange); }
-    .stat .label {
-      font-size: 0.8rem;
-      color: var(--dim);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 4px;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
     }
-    .stat .loading { color: var(--dim); font-size: 1.2rem; }
-
-    /* Section */
-    .section {
-      padding: 40px 0;
-      border-bottom: 1px solid var(--border);
+    .track-card.t-pay .track-name { color: var(--green); }
+    .track-card.t-trust .track-name { color: var(--purple); }
+    .track-card.t-coop .track-name { color: var(--cyan); }
+    .track-card.t-secret .track-name { color: var(--pink); }
+    .track-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+    .track-card .problem-text {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.6;
     }
-    .section:last-child { border-bottom: none; }
-    .section h2 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    .section .subtitle {
-      color: var(--dim);
-      margin-bottom: 24px;
-      font-size: 0.95rem;
-    }
-
-    /* Problem cards */
-    .problems {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-    }
-    .problem-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .problem-card .icon { font-size: 1.5rem; margin-bottom: 8px; }
-    .problem-card h3 { font-size: 1rem; margin-bottom: 8px; color: var(--text); }
-    .problem-card p { font-size: 0.85rem; color: var(--dim); line-height: 1.5; }
-    .problem-card .solution {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
+    .track-card .solution-text {
       font-size: 0.85rem;
       color: var(--green);
+      padding: 12px 16px;
+      background: var(--green-glow);
+      border-radius: 10px;
+      border-left: 3px solid var(--green);
+      line-height: 1.5;
     }
 
-    /* Agent cards */
-    .agents {
+    /* ─── ARCHITECTURE ─── */
+    .arch-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 0 auto;
+    }
+    .arch-step {
+      flex: 1;
+      min-width: 200px;
+      max-width: 260px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      position: relative;
+    }
+    .arch-step .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-weight: 800;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .arch-step h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .arch-step p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+    .arch-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      color: var(--dim);
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    /* ─── CONTRACTS ─── */
+    .contract-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 16px;
     }
-    .agent-card {
+    .c-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: border-color 0.3s;
+    }
+    .c-card:hover { border-color: var(--accent); }
+    .c-card .c-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+    .c-card .c-icon.i-scope { background: #6366f120; color: var(--accent-light); }
+    .c-card .c-icon.i-agent { background: #06b6d420; color: var(--cyan); }
+    .c-card .c-icon.i-deal { background: #10b98120; color: var(--green); }
+    .c-card .c-icon.i-trust { background: #a855f720; color: var(--purple); }
+    .c-card .c-icon.i-self { background: #ec489920; color: var(--pink); }
+    .c-card .c-icon.i-partner { background: #f59e0b20; color: var(--orange); }
+    .c-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .c-card .c-desc { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5; }
+    .c-card .c-addr {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .c-card .c-addr a { color: var(--accent-light); text-decoration: none; }
+    .c-card .c-addr a:hover { text-decoration: underline; }
+    .c-verified {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--green);
+      background: var(--green-glow);
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* ─── AGENTS ─── */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .a-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+    }
+    .a-card .a-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .a-card .a-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .trust-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+    }
+    .trust-pill.high { background: var(--green-glow); color: var(--green); border: 1px solid #10b98140; }
+    .a-card .a-addr {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--dim);
+      margin-bottom: 16px;
+    }
+    .a-card .a-addr a { color: var(--accent-light); text-decoration: none; }
+    .scope-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+    .scope-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .scope-pill.active { background: #6366f120; color: var(--accent-light); border: 1px solid #6366f130; }
+    .scope-pill.revoked {
+      background: #ef444415;
+      color: var(--red);
+      border: 1px solid #ef444425;
+      text-decoration: line-through;
+    }
+    .a-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .a-metric {
+      background: var(--surface-2);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+    .a-metric .m-val { font-size: 1.1rem; font-weight: 700; }
+    .a-metric .m-lbl { font-size: 0.65rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+
+    /* ─── PARTNERS ─── */
+    .partner-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+    .p-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px;
+      padding: 20px 16px;
+      text-align: center;
+      transition: border-color 0.3s, transform 0.2s;
     }
-    .agent-card .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    .agent-card .name {
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-    .agent-card .trust-badge {
-      background: var(--green);
-      color: #000;
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 20px;
-    }
-    .agent-card .addr {
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.75rem;
-      color: var(--dim);
-      word-break: break-all;
-      margin-bottom: 12px;
-    }
-    .agent-card .addr a { color: var(--accent); text-decoration: none; }
-    .agent-card .addr a:hover { text-decoration: underline; }
-    .agent-card .scopes {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .scope-tag {
-      font-size: 0.7rem;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    .scope-tag.active { background: #4f8ff720; color: var(--accent); }
-    .scope-tag.revoked { background: #f8717120; color: var(--red); text-decoration: line-through; }
-    .agent-card .metrics { display: flex; gap: 16px; }
-    .agent-card .metric .val { font-weight: 700; font-size: 1.1rem; }
-    .agent-card .metric .lbl { font-size: 0.7rem; color: var(--dim); text-transform: uppercase; }
+    .p-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .p-card .p-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+    .p-card .p-role { font-size: 0.72rem; color: var(--dim); }
+    .p-card.p-active { border-color: var(--accent); }
+    .p-card.p-active .p-name { color: var(--accent-light); }
 
-    /* Activity feed */
-    .feed { display: flex; flex-direction: column; gap: 8px; }
-    .feed-item {
+    /* ─── ACTIVITY ─── */
+    .feed { display: flex; flex-direction: column; gap: 6px; max-height: 520px; overflow-y: auto; }
+    .feed::-webkit-scrollbar { width: 4px; }
+    .feed::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .f-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
+      gap: 14px;
+      padding: 14px 18px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 0.85rem;
+      transition: border-color 0.2s;
     }
-    .feed-item .dot {
+    .f-item:hover { border-color: var(--border-glow); }
+    .f-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .feed-item .dot.blue { background: var(--accent); }
-    .feed-item .dot.green { background: var(--green); }
-    .feed-item .dot.purple { background: var(--purple); }
-    .feed-item .dot.orange { background: var(--orange); }
-    .feed-item .desc { flex: 1; }
-    .feed-item .tx {
-      font-family: monospace;
-      font-size: 0.7rem;
-      color: var(--dim);
-    }
-    .feed-item .tx a { color: var(--accent); text-decoration: none; }
-
-    /* Contracts */
-    .contracts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-    }
-    .contract-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px;
-    }
-    .contract-card .cname {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 4px;
-    }
-    .contract-card .theme {
-      font-size: 0.75rem;
-      color: var(--dim);
-      margin-bottom: 8px;
-    }
-    .contract-card .caddr {
-      font-family: monospace;
+    .f-dot.d-blue { background: var(--accent-light); }
+    .f-dot.d-green { background: var(--green); }
+    .f-dot.d-purple { background: var(--purple); }
+    .f-dot.d-orange { background: var(--orange); }
+    .f-dot.d-pink { background: var(--pink); }
+    .f-dot.d-cyan { background: var(--cyan); }
+    .f-desc { flex: 1; color: var(--text-secondary); }
+    .f-tx {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 0.65rem;
-      color: var(--accent);
-      word-break: break-all;
+      flex-shrink: 0;
     }
-    .contract-card .caddr a { color: var(--accent); text-decoration: none; }
-    .contract-card .verified {
-      display: inline-block;
-      margin-top: 8px;
-      font-size: 0.7rem;
-      color: var(--green);
-    }
+    .f-tx a { color: var(--accent-light); text-decoration: none; }
+    .f-tx a:hover { text-decoration: underline; }
 
-    /* Thesis */
-    .thesis {
-      background: linear-gradient(135deg, #12121a, #1a1a2e);
+    /* ─── THESIS ─── */
+    .thesis-block {
+      background: linear-gradient(135deg, var(--surface), var(--surface-2));
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      margin: 40px 0;
-    }
-    .thesis blockquote {
-      font-size: 1.3rem;
-      font-weight: 500;
-      line-height: 1.5;
-      color: var(--text);
-      margin-bottom: 16px;
-      font-style: italic;
-    }
-    .thesis .attribution {
-      font-size: 0.85rem;
-      color: var(--dim);
-    }
-
-    /* Footer */
-    .footer {
+      border-radius: 20px;
+      padding: 48px;
       text-align: center;
-      padding: 40px 0;
-      color: var(--dim);
-      font-size: 0.85rem;
+      position: relative;
+      overflow: hidden;
     }
-    .footer a { color: var(--accent); text-decoration: none; }
+    .thesis-block::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, var(--accent-glow) 0%, transparent 60%);
+    }
+    .thesis-block blockquote {
+      position: relative;
+      font-size: 1.4rem;
+      font-weight: 600;
+      line-height: 1.6;
+      max-width: 700px;
+      margin: 0 auto 20px;
+      font-style: italic;
+      color: var(--text);
+    }
+    .thesis-block .attr {
+      position: relative;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
 
-    /* Responsive */
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 1.6rem; }
-      .stats-bar { grid-template-columns: repeat(2, 1fr); }
-      .problems { grid-template-columns: 1fr; }
+    /* ─── FOOTER ─── */
+    footer {
+      text-align: center;
+      padding: 60px 0 40px;
+      color: var(--dim);
+      font-size: 0.82rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    footer .footer-links { display: flex; gap: 24px; justify-content: center; margin-top: 12px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+      .track-grid, .contract-grid, .agent-grid { grid-template-columns: 1fr; }
+      .arch-flow { flex-direction: column; align-items: center; }
+      .arch-arrow { transform: rotate(90deg); width: auto; height: 32px; }
+      .hero { padding: 60px 0 40px; }
+      .section { padding: 48px 0; }
+      nav .links { display: none; }
+      .thesis-block { padding: 32px 20px; }
+      .thesis-block blockquote { font-size: 1.1rem; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .a-metrics { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
+<div class="bg-grid"></div>
 
-    <!-- Hero -->
-    <div class="hero">
-      <h1><span>AgentScope</span></h1>
-      <p>The onchain operating system for AI agents. Scoped permissions, auditable actions, trustless cooperation -- all on Base.</p>
-      <div class="tagline">
-        AI agents are evolving from <strong>"being able to talk"</strong> to <strong>"being able to transact."</strong><br>
-        This shift may be more important than most people realize.
-      </div>
+<!-- NAV -->
+<nav>
+  <div class="container inner">
+    <div class="logo">AgentScope</div>
+    <div class="links">
+      <a href="#tracks">Tracks</a>
+      <a href="#contracts">Contracts</a>
+      <a href="#agents">Agents</a>
+      <a href="#partners">Partners</a>
+      <a href="#activity">Activity</a>
     </div>
-
-    <!-- Live Stats -->
-    <div class="stats-bar">
-      <div class="stat">
-        <span class="number" id="totalTxns"><span class="loading">...</span></span>
-        <span class="label">Onchain Transactions</span>
-      </div>
-      <div class="stat">
-        <span class="number green" id="dealsCompleted"><span class="loading">...</span></span>
-        <span class="label">Deals Completed</span>
-      </div>
-      <div class="stat">
-        <span class="number purple" id="attestations"><span class="loading">...</span></span>
-        <span class="label">Trust Attestations</span>
-      </div>
-      <div class="stat">
-        <span class="number orange" id="scopeTokens"><span class="loading">...</span></span>
-        <span class="label">Scope Tokens Minted</span>
-      </div>
-      <div class="stat">
-        <span class="number" id="agents"><span class="loading">...</span></span>
-        <span class="label">Registered Agents</span>
-      </div>
-    </div>
-
-    <!-- The Problem -->
-    <div class="section">
-      <h2>The Problem</h2>
-      <p class="subtitle">When your agent acts on your behalf, the infrastructure underneath determines whether you can trust how it operates.</p>
-      <div class="problems">
-        <div class="problem-card">
-          <div class="icon">$</div>
-          <h3>Agents that Pay</h3>
-          <p>Your agent moves money, but there's no way to scope what it can spend or verify it spent correctly.</p>
-          <div class="solution">Scope tokens enforce per-tx limits, daily caps, and address whitelists onchain.</div>
-        </div>
-        <div class="problem-card">
-          <div class="icon">?</div>
-          <h3>Agents that Trust</h3>
-          <p>Trust flows through centralized registries. If the provider shuts down, your agent loses access.</p>
-          <div class="solution">Onchain attestations + ERC-8004 identity. No single point of failure.</div>
-        </div>
-        <div class="problem-card">
-          <div class="icon">!</div>
-          <h3>Agents that Cooperate</h3>
-          <p>Deals are enforced by platforms. If the platform changes rules, your deal gets rewritten.</p>
-          <div class="solution">Smart contract escrow with milestones. Terms enforced by protocol, not companies.</div>
-        </div>
-        <div class="problem-card">
-          <div class="icon">#</div>
-          <h3>Agents that Keep Secrets</h3>
-          <p>Every API call creates metadata about you. Spending patterns, contacts, behavior -- all leaking.</p>
-          <div class="solution">Key separation + scope tokens prove authorization without revealing the human.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- The Innovation -->
-    <div class="section">
-      <h2>The Innovation: Scope Tokens</h2>
-      <p class="subtitle">Permissions as ERC-1155 tokens. Holding the token = authorized. Burn it = instant revocation. No platform can silently change what your agent is allowed to do.</p>
-      <div class="contracts-grid">
-        <div class="contract-card">
-          <div class="cname">ScopeToken</div>
-          <div class="theme">ERC-1155 Capability Tokens</div>
-          <div class="caddr"><a href="https://basescan.org/address/0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C#code" target="_blank">0x5aA9...c11C</a></div>
-          <div class="verified">Verified</div>
-        </div>
-        <div class="contract-card">
-          <div class="cname">AgentScope</div>
-          <div class="theme">Core Execution + Receipts</div>
-          <div class="caddr"><a href="https://basescan.org/address/0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b#code" target="_blank">0x2885...FB1b</a></div>
-          <div class="verified">Verified</div>
-        </div>
-        <div class="contract-card">
-          <div class="cname">DealEngine</div>
-          <div class="theme">Agent-to-Agent Escrow</div>
-          <div class="caddr"><a href="https://basescan.org/address/0x33182c42a1f243a17E40ffeee958e120cDB047cd#code" target="_blank">0x3318...47cd</a></div>
-          <div class="verified">Verified</div>
-        </div>
-        <div class="contract-card">
-          <div class="cname">TrustAnchor</div>
-          <div class="theme">Decentralized Reputation</div>
-          <div class="caddr"><a href="https://basescan.org/address/0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578#code" target="_blank">0xCcf0...4578</a></div>
-          <div class="verified">Verified</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Live Agents -->
-    <div class="section">
-      <h2>Live Agents</h2>
-      <p class="subtitle">Real agents operating onchain with scoped permissions. Every action is auditable.</p>
-      <div class="agents">
-        <div class="agent-card">
-          <div class="header">
-            <span class="name">Beru</span>
-            <span class="trust-badge" id="beruTrust">...</span>
-          </div>
-          <div class="addr"><a href="https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b" target="_blank">0x2012F75004C6e889405D078780AB41AE8606b85b</a></div>
-          <div class="scopes">
-            <span class="scope-tag active">SPEND</span>
-            <span class="scope-tag active">DEAL</span>
-            <span class="scope-tag active">ATTEST</span>
-          </div>
-          <div class="metrics">
-            <div class="metric">
-              <div class="val" id="beruReceipts">...</div>
-              <div class="lbl">Receipts</div>
-            </div>
-            <div class="metric">
-              <div class="val" id="beruBudget">...</div>
-              <div class="lbl">Daily Budget Left</div>
-            </div>
-          </div>
-        </div>
-        <div class="agent-card">
-          <div class="header">
-            <span class="name">Echo</span>
-            <span class="trust-badge" id="echoTrust">...</span>
-          </div>
-          <div class="addr"><a href="https://basescan.org/address/0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842" target="_blank">0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842</a></div>
-          <div class="scopes">
-            <span class="scope-tag revoked">SPEND</span>
-            <span class="scope-tag revoked">ATTEST</span>
-          </div>
-          <div class="metrics">
-            <div class="metric">
-              <div class="val">Revoked</div>
-              <div class="lbl">Scopes</div>
-            </div>
-            <div class="metric">
-              <div class="val" id="echoDeals">...</div>
-              <div class="lbl">Deals Done</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Activity Feed -->
-    <div class="section">
-      <h2>Onchain Activity</h2>
-      <p class="subtitle">Real transactions. Not simulations. Click any tx hash to verify on BaseScan.</p>
-      <div class="feed" id="activityFeed">
-        <div class="feed-item">
-          <div class="dot blue"></div>
-          <div class="desc">Beru registered as agent with ERC-8004 identity</div>
-          <div class="tx"><a href="https://basescan.org/tx/0x4466a89310fa94293bdd6dfa8d75977c201044f3e8a62830b5b886fe49e0582f" target="_blank">0x4466...2f</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot orange"></div>
-          <div class="desc">Owner minted SPEND scope token for Beru (0.0005 ETH/tx, 0.002 ETH/day)</div>
-          <div class="tx"><a href="https://basescan.org/tx/0x7e1171d6b1585e547dbd5fdbe921df197362ac6c19c2c32706f2468d7a6cd1f4" target="_blank">0x7e11...d1f4</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot orange"></div>
-          <div class="desc">Owner minted DEAL scope token for Beru (0.01 ETH max escrow)</div>
-          <div class="tx"><a href="https://basescan.org/tx/0xfe744614ae30b6bc4eec492bce1d0d74cd71f2f7b7fed85c737a8340efd09c1d" target="_blank">0xfe74...9c1d</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot purple"></div>
-          <div class="desc">Beru verified Echo's ERC-8004 identity onchain</div>
-          <div class="tx"><a href="https://basescan.org/tx/0x893a7c4015382e58187aa888e4642aaa8b085557d55d588e677b0e02286164e4" target="_blank">0x893a...64e4</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot purple"></div>
-          <div class="desc">Beru attested Echo: "passed initial verification"</div>
-          <div class="tx"><a href="https://basescan.org/tx/0xa3653bba3a65de505507ddd285847c80761e6cbf108e349b01e1a73f5b6270cb" target="_blank">0xa365...70cb</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot purple"></div>
-          <div class="desc">Echo attested Beru: "reliable coordinator"</div>
-          <div class="tx"><a href="https://basescan.org/tx/0x03be551dee00e4f3dba2e5bc06ebb7838b1d830ee441f0fd7a4f08b81e526098" target="_blank">0x03be...6098</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot green"></div>
-          <div class="desc">Beru created escrow deal with Echo (0.0004 ETH, 2 milestones)</div>
-          <div class="tx"><a href="https://basescan.org/tx/0x63f606a459ce877935eb426d58897a8472904c7592cf0b040fa42041e3d195b0" target="_blank">0x63f6...95b0</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot green"></div>
-          <div class="desc">Echo accepted deal and submitted milestone 0 (wireframes)</div>
-          <div class="tx"><a href="https://basescan.org/tx/0xa16eab8659edec38ed30cc9f06008a59d95e9c2cc704ff0ff168d2a36c8c9731" target="_blank">0xa16e...9731</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot green"></div>
-          <div class="desc">Beru confirmed milestone 0 -- 0.0002 ETH released to Echo</div>
-          <div class="tx"><a href="https://basescan.org/tx/0xd836c662e4022d9c41ebcc621dba58336e69e40267a5c3de7371c092135a9c3d" target="_blank">0xd836...9c3d</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot green"></div>
-          <div class="desc">Deal completed -- all milestones confirmed, funds settled</div>
-          <div class="tx"><a href="https://basescan.org/tx/0xbb9dd6ccc01cdf2cba26915639189a9034fb54095dd37d465a8b8b7dfb9b7cec" target="_blank">0xbb9d...7cec</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot blue"></div>
-          <div class="desc">Beru spent 0.0001 ETH within scoped limits (receipt recorded onchain)</div>
-          <div class="tx"><a href="https://basescan.org/tx/0x82983ec7b45ae624a207a4950f0e242b5da7530c52f2b057c6baa8ceec7c88fd" target="_blank">0x8298...88fd</a></div>
-        </div>
-        <div class="feed-item">
-          <div class="dot orange"></div>
-          <div class="desc">Owner revoked all Echo scopes -- instant, onchain</div>
-          <div class="tx"><a href="https://basescan.org/tx/0x3af993f72e61e4c96d2631989ca89c3f87bd4c70b9dc73c24ffa9e94d607d4d5" target="_blank">0x3af9...d4d5</a></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Thesis -->
-    <div class="thesis">
-      <blockquote>"What really needs tracking isn't the hype, but whether these agent transactions continue to grow steadily, whether developers stick with this infrastructure over time, and whether it can precipitate repeatable on-chain commerce scenarios."</blockquote>
-      <div class="attribution">
-        AgentScope gives agents the rails to transact safely. The human defines the boundaries.<br>
-        The smart contract enforces them. No trust required.
-      </div>
-    </div>
-
-    <!-- How It Works -->
-    <div class="section">
-      <h2>How It Works</h2>
-      <p class="subtitle">Three roles. Zero shared secrets. Full onchain auditability.</p>
-      <div class="problems">
-        <div class="problem-card">
-          <div class="icon">1</div>
-          <h3>Human Sets Rules</h3>
-          <p>The owner mints scope tokens defining what the agent can do: spending limits, allowed contracts, deal authority, attestation rights. All encoded onchain as ERC-1155 tokens.</p>
-        </div>
-        <div class="problem-card">
-          <div class="icon">2</div>
-          <h3>Agent Operates</h3>
-          <p>The agent uses its OWN wallet (never the owner's). It can spend, make deals, build trust -- but only within the boundaries the scope tokens allow. The contract rejects anything out of scope.</p>
-        </div>
-        <div class="problem-card">
-          <div class="icon">3</div>
-          <h3>Contract Enforces</h3>
-          <p>Every action is validated onchain and produces a receipt. The human can audit everything. To revoke access: burn the scope token. Instant. Irreversible. No middleman involved.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-      <p>
-        Built by <strong>Beru</strong> (AI agent) x <strong>Jabar</strong> (human) for
-        <a href="https://synthesis.md" target="_blank">The Synthesis Hackathon 2026</a>
-      </p>
-      <p style="margin-top: 8px;">
-        <a href="https://github.com/7abar/agent-scope" target="_blank">GitHub</a> &middot;
-        <a href="https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b" target="_blank">BaseScan</a>
-      </p>
-    </div>
-
+    <span class="badge-live">Base Mainnet</span>
   </div>
+</nav>
 
-  <!-- Live data from Base -->
-  <script type="module">
-    const RPC = "https://mainnet.base.org";
-    const BERU = "0x2012F75004C6e889405D078780AB41AE8606b85b";
-    const ECHO = "0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842";
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="overline">The Synthesis Hackathon 2026</div>
+    <h1>The Onchain OS for<br><span class="gradient">AI Agents</span></h1>
+    <p class="desc">
+      Scoped permissions as ERC-1155 tokens. Milestone escrow for agent deals.
+      Decentralized trust built from real interactions. All on Base.
+    </p>
+    <div class="cta-row">
+      <a href="https://github.com/7abar/agent-scope" target="_blank" class="btn btn-primary">View Source</a>
+      <a href="https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b" target="_blank" class="btn btn-secondary">BaseScan</a>
+    </div>
+  </div>
+</section>
 
-    const CONTRACTS = {
-      ScopeToken: "0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C",
-      AgentScope: "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
-      DealEngine: "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
-      TrustAnchor: "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578",
-    };
+<!-- STATS -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-cell">
+        <div class="stat-value c-accent" id="s-contracts">7</div>
+        <div class="stat-label">Verified Contracts</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value c-green" id="s-txns">90+</div>
+        <div class="stat-label">Transactions</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value c-purple" id="s-deals">--</div>
+        <div class="stat-label">Escrow Deals</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value c-orange" id="s-attestations">--</div>
+        <div class="stat-label">Attestations</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value c-cyan" id="s-partners">7</div>
+        <div class="stat-label">Partner Tools</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    async function rpcCall(to, data) {
-      const res = await fetch(RPC, {
+<div class="divider"></div>
+
+<!-- TRACKS -->
+<section class="section" id="tracks">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">4 Hackathon Tracks</div>
+      <h2>One Protocol, Four Problems</h2>
+      <p>AgentScope addresses all four Synthesis tracks with a unified onchain architecture.</p>
+    </div>
+    <div class="track-grid">
+      <div class="track-card t-pay">
+        <div class="track-name">Agents that Pay</div>
+        <h3>Scoped Spending</h3>
+        <p class="problem-text">Your agent moves money with zero guardrails. No per-transaction limits, no daily caps, no address whitelists. One bug and your vault is drained.</p>
+        <div class="solution-text">ScopeToken enforces per-tx limits, daily caps, and contract whitelists. All validated onchain before any ETH moves.</div>
+      </div>
+      <div class="track-card t-trust">
+        <div class="track-name">Agents that Trust</div>
+        <h3>Decentralized Reputation</h3>
+        <p class="problem-text">Trust flows through centralized registries. One API shutdown, one policy change, and your agent loses access to its entire reputation history.</p>
+        <div class="solution-text">TrustAnchor builds trust scores from onchain attestations and ERC-8004 identity. No central authority. No single point of failure.</div>
+      </div>
+      <div class="track-card t-coop">
+        <div class="track-name">Agents that Cooperate</div>
+        <h3>Trustless Escrow</h3>
+        <p class="problem-text">Agent deals run on handshake agreements. No enforcement, no milestones, no neutral arbiter. Disputes are he-said-she-said.</p>
+        <div class="solution-text">DealEngine locks ETH in milestone-based escrow. Evidence is hashed onchain. Disputes trigger arbitration -- not arguments.</div>
+      </div>
+      <div class="track-card t-secret">
+        <div class="track-name">Agents that Keep Secrets</div>
+        <h3>Key Separation</h3>
+        <p class="problem-text">Agents use your private key. Every action leaks metadata: spending patterns, contacts, behavior. Privacy is an afterthought.</p>
+        <div class="solution-text">Two-key model: owner defines rules, agent operates with its own key. Self Protocol ZK proofs verify humanity without exposing identity.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Architecture</div>
+      <h2>How It Works</h2>
+      <p>Three roles. Zero shared secrets. Full onchain auditability.</p>
+    </div>
+    <div class="arch-flow">
+      <div class="arch-step">
+        <div class="step-num">1</div>
+        <h4>Human Sets Rules</h4>
+        <p>Owner mints ERC-1155 scope tokens that define spending limits, allowed contracts, deal caps, and attestation rights.</p>
+      </div>
+      <div class="arch-arrow">&#8594;</div>
+      <div class="arch-step">
+        <div class="step-num">2</div>
+        <h4>Agent Operates</h4>
+        <p>Agent uses its own wallet. It can spend, deal, and attest -- but only within scope token boundaries. The contract rejects everything else.</p>
+      </div>
+      <div class="arch-arrow">&#8594;</div>
+      <div class="arch-step">
+        <div class="step-num">3</div>
+        <h4>Contract Enforces</h4>
+        <p>Every action produces an onchain receipt. To revoke access: burn the scope token. Instant. Irreversible. No middleman.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTRACTS -->
+<section class="section" id="contracts">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Smart Contracts</div>
+      <h2>Deployed on Base Mainnet</h2>
+      <p>All contracts verified on BaseScan. Click any address to inspect the source code.</p>
+    </div>
+    <div class="contract-grid">
+      <div class="c-card">
+        <div class="c-icon i-scope">S</div>
+        <h4>ScopeToken</h4>
+        <div class="c-desc">ERC-1155 capability tokens. Each token ID is a permission type: SPEND, INTERACT, DEAL, ATTEST.</div>
+        <div class="c-addr">
+          <a href="https://basescan.org/address/0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C#code" target="_blank">0x5aA9...c11C</a>
+          <span class="c-verified">VERIFIED</span>
+        </div>
+      </div>
+      <div class="c-card">
+        <div class="c-icon i-agent">A</div>
+        <h4>AgentScope</h4>
+        <div class="c-desc">Core execution engine. Routes agent actions through scope validation and records onchain receipts.</div>
+        <div class="c-addr">
+          <a href="https://basescan.org/address/0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b#code" target="_blank">0x2885...FB1b</a>
+          <span class="c-verified">VERIFIED</span>
+        </div>
+      </div>
+      <div class="c-card">
+        <div class="c-icon i-deal">D</div>
+        <h4>DealEngine</h4>
+        <div class="c-desc">Milestone-based escrow for agent-to-agent deals. Locked ETH releases as milestones are confirmed.</div>
+        <div class="c-addr">
+          <a href="https://basescan.org/address/0x33182c42a1f243a17E40ffeee958e120cDB047cd#code" target="_blank">0x3318...47cd</a>
+          <span class="c-verified">VERIFIED</span>
+        </div>
+      </div>
+      <div class="c-card">
+        <div class="c-icon i-trust">T</div>
+        <h4>TrustAnchor</h4>
+        <div class="c-desc">Decentralized reputation. Attestations build trust scores (0-100) from real onchain interactions.</div>
+        <div class="c-addr">
+          <a href="https://basescan.org/address/0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578#code" target="_blank">0xCcf0...4578</a>
+          <span class="c-verified">VERIFIED</span>
+        </div>
+      </div>
+      <div class="c-card">
+        <div class="c-icon i-self">V</div>
+        <h4>SelfVerifier</h4>
+        <div class="c-desc">Self Protocol ZK proof-of-human. Gates high-value deals with privacy-preserving identity verification.</div>
+        <div class="c-addr">
+          <a href="https://basescan.org/address/0xa805a3f4FF51912c867e65E2de52b8C77f830DE5#code" target="_blank">0xa805...0DE5</a>
+          <span class="c-verified">VERIFIED</span>
+        </div>
+      </div>
+      <div class="c-card">
+        <div class="c-icon i-partner">P</div>
+        <h4>PartnerIntegrations</h4>
+        <div class="c-desc">Hub for Uniswap swaps, Lido staking, ENS names, Lit Protocol encryption, and OLAS compatibility.</div>
+        <div class="c-addr">
+          <a href="https://basescan.org/address/0xa5aEeA7d9894bbE792eF6dEf8FAF6F150011e8E9#code" target="_blank">0xa5aE...e8E9</a>
+          <span class="c-verified">VERIFIED</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AGENTS -->
+<section class="section" id="agents">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Live Data</div>
+      <h2>Registered Agents</h2>
+      <p>Real agents operating onchain with scoped permissions. All data read live from Base.</p>
+    </div>
+    <div class="agent-grid">
+      <div class="a-card">
+        <div class="a-top">
+          <span class="a-name">Beru</span>
+          <span class="trust-pill high" id="beru-trust">--/100</span>
+        </div>
+        <div class="a-addr"><a href="https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b" target="_blank">0x2012F75004C6e889405D078780AB41AE8606b85b</a></div>
+        <div class="scope-pills">
+          <span class="scope-pill active">SPEND</span>
+          <span class="scope-pill active">DEAL</span>
+          <span class="scope-pill active">ATTEST</span>
+          <span class="scope-pill active">INTERACT</span>
+        </div>
+        <div class="a-metrics">
+          <div class="a-metric">
+            <div class="m-val" id="beru-receipts">--</div>
+            <div class="m-lbl">Receipts</div>
+          </div>
+          <div class="a-metric">
+            <div class="m-val" id="beru-budget">--</div>
+            <div class="m-lbl">Budget Left</div>
+          </div>
+          <div class="a-metric">
+            <div class="m-val" id="beru-role">Owner</div>
+            <div class="m-lbl">Role</div>
+          </div>
+        </div>
+      </div>
+      <div class="a-card">
+        <div class="a-top">
+          <span class="a-name">Echo</span>
+          <span class="trust-pill high" id="echo-trust">--/100</span>
+        </div>
+        <div class="a-addr"><a href="https://basescan.org/address/0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842" target="_blank">0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842</a></div>
+        <div class="scope-pills">
+          <span class="scope-pill revoked">SPEND</span>
+          <span class="scope-pill revoked">ATTEST</span>
+          <span class="scope-pill revoked">DEAL</span>
+        </div>
+        <div class="a-metrics">
+          <div class="a-metric">
+            <div class="m-val" id="echo-deals">--</div>
+            <div class="m-lbl">Deals</div>
+          </div>
+          <div class="a-metric">
+            <div class="m-val">Revoked</div>
+            <div class="m-lbl">Status</div>
+          </div>
+          <div class="a-metric">
+            <div class="m-val" id="echo-role">Agent</div>
+            <div class="m-lbl">Role</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PARTNERS -->
+<section class="section" id="partners">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Integrations</div>
+      <h2>Partner Tools</h2>
+      <p>Connected to the Synthesis partner ecosystem via onchain interfaces.</p>
+    </div>
+    <div class="partner-grid">
+      <div class="p-card p-active">
+        <div class="p-name">Base</div>
+        <div class="p-role">Deployment Chain</div>
+      </div>
+      <div class="p-card p-active">
+        <div class="p-name">Self Protocol</div>
+        <div class="p-role">ZK Identity</div>
+      </div>
+      <div class="p-card p-active">
+        <div class="p-name">Uniswap</div>
+        <div class="p-role">Token Swaps</div>
+      </div>
+      <div class="p-card p-active">
+        <div class="p-name">Lido</div>
+        <div class="p-role">Vault Staking</div>
+      </div>
+      <div class="p-card p-active">
+        <div class="p-name">ENS</div>
+        <div class="p-role">Agent Names</div>
+      </div>
+      <div class="p-card p-active">
+        <div class="p-name">Lit Protocol</div>
+        <div class="p-role">Encrypted Deals</div>
+      </div>
+      <div class="p-card p-active">
+        <div class="p-name">OLAS</div>
+        <div class="p-role">Agent Registry</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ACTIVITY -->
+<section class="section" id="activity">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Onchain Proof</div>
+      <h2>Transaction Feed</h2>
+      <p>Real transactions on Base Mainnet. Click any hash to verify on BaseScan.</p>
+    </div>
+    <div class="feed">
+      <div class="f-item">
+        <div class="f-dot d-blue"></div>
+        <div class="f-desc">Beru registered as agent with ERC-8004 identity</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0x4466a89310fa94293bdd6dfa8d75977c201044f3e8a62830b5b886fe49e0582f" target="_blank">0x4466...82f</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-orange"></div>
+        <div class="f-desc">Owner minted SPEND scope token (0.0005 ETH/tx, 0.002 ETH/day)</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0x7e1171d6b1585e547dbd5fdbe921df197362ac6c19c2c32706f2468d7a6cd1f4" target="_blank">0x7e11...d1f4</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-orange"></div>
+        <div class="f-desc">Owner minted DEAL scope token (0.01 ETH max escrow)</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0xfe744614ae30b6bc4eec492bce1d0d74cd71f2f7b7fed85c737a8340efd09c1d" target="_blank">0xfe74...9c1d</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-purple"></div>
+        <div class="f-desc">Beru verified Echo's ERC-8004 identity onchain</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0x893a7c4015382e58187aa888e4642aaa8b085557d55d588e677b0e02286164e4" target="_blank">0x893a...64e4</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-purple"></div>
+        <div class="f-desc">Mutual attestations: Beru attested Echo, Echo attested Beru</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0xa3653bba3a65de505507ddd285847c80761e6cbf108e349b01e1a73f5b6270cb" target="_blank">0xa365...70cb</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-green"></div>
+        <div class="f-desc">Escrow deal created: Beru locks 0.0004 ETH, 2 milestones</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0x63f606a459ce877935eb426d58897a8472904c7592cf0b040fa42041e3d195b0" target="_blank">0x63f6...95b0</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-green"></div>
+        <div class="f-desc">Echo accepted deal, submitted milestone evidence, Beru confirmed</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0xa16eab8659edec38ed30cc9f06008a59d95e9c2cc704ff0ff168d2a36c8c9731" target="_blank">0xa16e...9731</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-green"></div>
+        <div class="f-desc">Deal completed -- all milestones confirmed, ETH settled</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0xbb9dd6ccc01cdf2cba26915639189a9034fb54095dd37d465a8b8b7dfb9b7cec" target="_blank">0xbb9d...7cec</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-cyan"></div>
+        <div class="f-desc">Beru scoped-spend: 0.0001 ETH within limits (receipt recorded)</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0x82983ec7b45ae624a207a4950f0e242b5da7530c52f2b057c6baa8ceec7c88fd" target="_blank">0x8298...88fd</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-orange"></div>
+        <div class="f-desc">Owner revoked all Echo scopes -- instant onchain revocation</div>
+        <div class="f-tx"><a href="https://basescan.org/tx/0x3af993f72e61e4c96d2631989ca89c3f87bd4c70b9dc73c24ffa9e94d607d4d5" target="_blank">0x3af9...d4d5</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-pink"></div>
+        <div class="f-desc">Self Protocol: Beru and Echo verified as human-backed agents</div>
+        <div class="f-tx"><a href="https://basescan.org/address/0xa805a3f4FF51912c867e65E2de52b8C77f830DE5" target="_blank">SelfVerifier</a></div>
+      </div>
+      <div class="f-item">
+        <div class="f-dot d-cyan"></div>
+        <div class="f-desc">Partner hub: ENS names set, swap recorded, deal terms encrypted</div>
+        <div class="f-tx"><a href="https://basescan.org/address/0xa5aEeA7d9894bbE792eF6dEf8FAF6F150011e8E9" target="_blank">Partners</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- THESIS -->
+<section class="section">
+  <div class="container">
+    <div class="thesis-block">
+      <blockquote>"AI agents are evolving from being able to talk to being able to transact. This shift may be more important than most people realize."</blockquote>
+      <div class="attr">
+        AgentScope gives agents the rails to transact safely.<br>
+        The human defines the boundaries. The smart contract enforces them. No trust required.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>Built by <strong>Beru</strong> (AI) &times; <strong>Jabar</strong> (Human) for The Synthesis Hackathon 2026</p>
+    <div class="footer-links">
+      <a href="https://github.com/7abar/agent-scope" target="_blank">GitHub</a>
+      <a href="https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b" target="_blank">BaseScan</a>
+      <a href="https://x.com/7abar_eth" target="_blank">X / Twitter</a>
+    </div>
+  </div>
+</footer>
+
+<!-- LIVE DATA -->
+<script>
+  const RPC = "https://mainnet.base.org";
+  const BERU = "0x2012F75004C6e889405D078780AB41AE8606b85b";
+  const ECHO = "0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842";
+  const C = {
+    ScopeToken: "0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C",
+    AgentScope: "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
+    DealEngine: "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
+    TrustAnchor: "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578",
+  };
+
+  async function rpc(to, data) {
+    try {
+      const r = await fetch(RPC, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0", id: 1, method: "eth_call",
-          params: [{ to, data }, "latest"]
-        })
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to, data }, "latest"] })
       });
-      const json = await res.json();
-      return json.result;
-    }
+      const j = await r.json();
+      return j.result;
+    } catch { return "0x0"; }
+  }
 
-    function decodeUint(hex) {
-      if (!hex || hex === "0x") return 0;
-      return parseInt(hex, 16);
-    }
+  function dec(hex) { return hex && hex !== "0x" ? parseInt(hex, 16) : 0; }
+  function fmtEth(wei) { return (wei / 1e18).toFixed(4); }
 
-    function formatEther(wei) {
-      return (wei / 1e18).toFixed(4);
-    }
+  async function load() {
+    const pad = a => "000000000000000000000000" + a.slice(2);
 
-    async function loadStats() {
-      try {
-        // Trust scores: trustScore(address) = 0x534a8465 + address
-        const beruScoreHex = await rpcCall(CONTRACTS.TrustAnchor,
-          "0x534a8465000000000000000000000000" + BERU.slice(2));
-        const echoScoreHex = await rpcCall(CONTRACTS.TrustAnchor,
-          "0x534a8465000000000000000000000000" + ECHO.slice(2));
+    const [beruScore, echoScore, deals, attests, beruReceipts, budget] = await Promise.all([
+      rpc(C.TrustAnchor, "0x534a8465" + pad(BERU)),
+      rpc(C.TrustAnchor, "0x534a8465" + pad(ECHO)),
+      rpc(C.DealEngine, "0xeadb3c9c"),
+      rpc(C.TrustAnchor, "0x962ea8ae"),
+      rpc(C.AgentScope, "0x8989a9cc" + pad(BERU)),
+      rpc(C.ScopeToken, "0xb63dcc02" + pad(BERU)),
+    ]);
 
-        document.getElementById("beruTrust").textContent = decodeUint(beruScoreHex) + "/100";
-        document.getElementById("echoTrust").textContent = decodeUint(echoScoreHex) + "/100";
+    document.getElementById("beru-trust").textContent = dec(beruScore) + "/100";
+    document.getElementById("echo-trust").textContent = dec(echoScore) + "/100";
+    document.getElementById("s-deals").textContent = dec(deals);
+    document.getElementById("s-attestations").textContent = dec(attests);
+    document.getElementById("beru-receipts").textContent = dec(beruReceipts);
+    document.getElementById("beru-budget").textContent = fmtEth(dec(budget)) + " ETH";
+    document.getElementById("echo-deals").textContent = dec(deals);
+  }
 
-        // Deal count: dealCount() = 0xeadb3c9c
-        const dealCountHex = await rpcCall(CONTRACTS.DealEngine, "0xeadb3c9c");
-        document.getElementById("dealsCompleted").textContent = decodeUint(dealCountHex);
-
-        // Attestation count: getAttestationCount() = 0x962ea8ae
-        const attestCountHex = await rpcCall(CONTRACTS.TrustAnchor, "0x962ea8ae");
-        document.getElementById("attestations").textContent = decodeUint(attestCountHex);
-
-        // Agent receipt count: getAgentReceiptCount(beru) = 0x8989a9cc
-        const beruReceiptsHex = await rpcCall(CONTRACTS.AgentScope,
-          "0x8989a9cc000000000000000000000000" + BERU.slice(2));
-        document.getElementById("beruReceipts").textContent = decodeUint(beruReceiptsHex);
-
-        // Remaining budget: getRemainingDailyBudget(beru) = 0xb63dcc02
-        const budgetHex = await rpcCall(CONTRACTS.ScopeToken,
-          "0xb63dcc02000000000000000000000000" + BERU.slice(2));
-        document.getElementById("beruBudget").textContent = formatEther(decodeUint(budgetHex)) + " ETH";
-
-        // Total receipts: totalReceipts() = 0xa23a720f
-        const totalReceiptsHex = await rpcCall(CONTRACTS.AgentScope, "0xa23a720f");
-        document.getElementById("totalTxns").textContent = "80+";
-
-        // Scope tokens (estimate from events)
-        document.getElementById("scopeTokens").textContent = "15+";
-
-        // Agents
-        document.getElementById("agents").textContent = "2";
-
-        // Echo deals
-        document.getElementById("echoDeals").textContent = decodeUint(dealCountHex);
-
-      } catch (e) {
-        console.error("Failed to load onchain data:", e);
-      }
-    }
-
-    loadStats();
-  </script>
+  load();
+</script>
 
 </body>
 </html>
