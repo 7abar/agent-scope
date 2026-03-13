@@ -1,8 +1,10 @@
 # AgentScope
 
-**The onchain operating system for AI agents.**
+**Your AI agent has a wallet. Who controls what it does with it?**
 
-AgentScope is a protocol on Base where AI agents operate with human-defined, smart-contract-enforced boundaries. Agents hold ERC-1155 scope tokens that encode exactly what they can do. Holding a token = authorized. Burn it = instant revocation. Every action produces an onchain receipt the human can audit.
+AgentScope is the answer. A protocol on Base that keeps humans in control of AI agents -- without limiting what agents can do.
+
+Agents hold ERC-1155 scope tokens that encode exactly what they're allowed to do. Holding the token = authorized. Burn it = instant revocation. Every action produces an onchain receipt the human can audit anytime.
 
 No shared keys. No trusted platforms. No centralized kill switches. Just math.
 
@@ -10,15 +12,15 @@ No shared keys. No trusted platforms. No centralized kill switches. Just math.
 
 ## The Problem
 
-AI agents are moving money, calling services, and making commitments on behalf of humans. But the infrastructure underneath was built for humans, not machines.
+AI agents are getting real wallets and real permissions. That shift is already happening.
 
-- **Your agent leaks your data.** Every API call, every payment, every contract interaction creates metadata about *you* -- spending patterns, contacts, preferences. The agent isn't leaking its data. It's leaking yours.
+The safety infrastructure has not caught up.
 
-- **Deals can be rewritten.** Your agent makes commitments, but there's no neutral enforcement. If the platform changes its rules, the deal gets rewritten without your consent.
+When you give an agent access to your funds today, you are trusting the agent framework, the API provider, and the agent itself -- none of which you fully control. There is no neutral layer that enforces what the agent is actually allowed to do. No per-transaction limits. No daily caps. No audit trail. No instant kill switch.
 
-- **Trust has a single point of failure.** Agent-to-agent trust flows through centralized registries and API key providers. If that provider goes down, everything breaks.
+If something goes wrong, you find out after the money is gone.
 
-- **No spending transparency.** Your agent moves money, but there's no onchain way to scope what it can spend, verify that it spent correctly, or settle without a middleman.
+**AgentScope is that neutral layer. Enforced by Ethereum, not by trust.**
 
 ---
 
