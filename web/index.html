@@ -573,10 +573,97 @@
     footer a:hover { text-decoration: underline; }
     footer .footer-links { display: flex; gap: 24px; justify-content: center; margin-top: 12px; }
 
+    /* ─── DEPLOY ─── */
+    .deploy-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .deploy-steps { display: flex; flex-direction: column; gap: 24px; }
+    .deploy-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .ds-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .ds-content { flex: 1; }
+    .ds-content h4 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .ds-note { font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px; }
+    .code-block {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      overflow-x: auto;
+    }
+    .code-block code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--green);
+      line-height: 1.7;
+    }
+    .deploy-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      padding: 20px;
+      background: var(--surface-2);
+      border-radius: 12px;
+    }
+    .di-row { display: flex; flex-direction: column; gap: 4px; }
+    .di-label { font-size: 0.7rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .di-value { font-size: 0.9rem; font-weight: 600; }
+    .di-value a { color: var(--accent-light); text-decoration: none; }
+    .di-value a:hover { text-decoration: underline; }
+    .deploy-what h4 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+    .dw-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .dw-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 16px;
+      background: var(--surface-2);
+      border-radius: 10px;
+    }
+    .dw-icon {
+      font-size: 1.2rem;
+      font-weight: 800;
+      width: 36px;
+      height: 36px;
+      background: var(--bg);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .dw-item strong { display: block; font-size: 0.88rem; margin-bottom: 2px; }
+    .dw-item span { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
+
     /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
       .stats-grid { grid-template-columns: repeat(3, 1fr); }
       .track-grid, .contract-grid, .agent-grid { grid-template-columns: 1fr; }
+      .contract-grid .c-card { grid-column: span 1 !important; }
+      .dw-grid { grid-template-columns: 1fr; }
+      .deploy-box { padding: 20px; }
       .arch-flow { flex-direction: column; align-items: center; }
       .arch-arrow { transform: rotate(90deg); width: auto; height: 32px; }
       .hero { padding: 60px 0 40px; }
@@ -601,6 +688,7 @@
     <div class="logo">AgentScope</div>
     <div class="links">
       <a href="#tracks">Tracks</a>
+      <a href="#deploy">Deploy</a>
       <a href="#contracts">Contracts</a>
       <a href="#agents">Agents</a>
       <a href="#partners">Partners</a>
@@ -727,6 +815,113 @@
 
 <div class="divider"></div>
 
+<!-- DEPLOY YOUR OWN -->
+<section class="section" id="deploy">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Permissionless</div>
+      <h2>Deploy Your Own AgentScope</h2>
+      <p>One transaction. Four contracts. You as owner. No fees, no approval, no gatekeeping.</p>
+    </div>
+
+    <div class="deploy-box">
+      <div class="deploy-steps">
+        <div class="deploy-step">
+          <div class="ds-num">1</div>
+          <div class="ds-content">
+            <h4>Call the Factory</h4>
+            <div class="code-block">
+              <code>cast send 0x4440e2137e9F4857453a1a213AdD7CD174054de5 "create()" \<br>
+              &nbsp;&nbsp;--rpc-url https://mainnet.base.org \<br>
+              &nbsp;&nbsp;--private-key YOUR_KEY</code>
+            </div>
+            <p class="ds-note">Cost: ~0.002 ETH on Base. You get 4 contracts deployed with you as owner.</p>
+          </div>
+        </div>
+        <div class="deploy-step">
+          <div class="ds-num">2</div>
+          <div class="ds-content">
+            <h4>Register Your Agent</h4>
+            <div class="code-block">
+              <code>cast send YOUR_AGENTSCOPE \<br>
+              &nbsp;&nbsp;"registerAgent(address,string)" AGENT_ADDR "MyAgent" \<br>
+              &nbsp;&nbsp;--rpc-url https://mainnet.base.org --private-key OWNER_KEY</code>
+            </div>
+          </div>
+        </div>
+        <div class="deploy-step">
+          <div class="ds-num">3</div>
+          <div class="ds-content">
+            <h4>Grant Permissions</h4>
+            <div class="code-block">
+              <code>cast send YOUR_SCOPETOKEN \<br>
+              &nbsp;&nbsp;"grantSpendScope(address,uint256,uint256,uint40)" \<br>
+              &nbsp;&nbsp;AGENT_ADDR 1000000000000000 10000000000000000 0 \<br>
+              &nbsp;&nbsp;--rpc-url https://mainnet.base.org --private-key OWNER_KEY</code>
+            </div>
+            <p class="ds-note">0.001 ETH per tx, 0.01 ETH daily cap, no expiry. Your agent is live.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="deploy-info">
+        <div class="di-row">
+          <span class="di-label">Factory Contract</span>
+          <a href="https://basescan.org/address/0x4440e2137e9f4857453a1a213add7cd174054de5#code" target="_blank" class="di-value mono">0x4440...4de5</a>
+        </div>
+        <div class="di-row">
+          <span class="di-label">Total Deployments</span>
+          <span class="di-value" id="factory-count">--</span>
+        </div>
+        <div class="di-row">
+          <span class="di-label">Network</span>
+          <span class="di-value">Base Mainnet</span>
+        </div>
+        <div class="di-row">
+          <span class="di-label">Source Code</span>
+          <a href="https://github.com/7abar/agent-scope" target="_blank" class="di-value">Open Source (MIT)</a>
+        </div>
+      </div>
+
+      <div class="deploy-what">
+        <h4>What You Get</h4>
+        <div class="dw-grid">
+          <div class="dw-item">
+            <span class="dw-icon" style="color:var(--accent-light)">S</span>
+            <div>
+              <strong>ScopeToken</strong>
+              <span>ERC-1155 permission tokens with spending limits, contract whitelists, and time expiry</span>
+            </div>
+          </div>
+          <div class="dw-item">
+            <span class="dw-icon" style="color:var(--cyan)">A</span>
+            <div>
+              <strong>AgentScope</strong>
+              <span>Execution engine that validates every agent action and records onchain receipts</span>
+            </div>
+          </div>
+          <div class="dw-item">
+            <span class="dw-icon" style="color:var(--green)">D</span>
+            <div>
+              <strong>DealEngine</strong>
+              <span>Milestone escrow for agent-to-agent deals with onchain evidence and dispute resolution</span>
+            </div>
+          </div>
+          <div class="dw-item">
+            <span class="dw-icon" style="color:var(--purple)">T</span>
+            <div>
+              <strong>TrustAnchor</strong>
+              <span>Reputation from real interactions and ERC-8004 identity verification</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- CONTRACTS -->
 <section class="section" id="contracts">
   <div class="container">
@@ -736,6 +931,15 @@
       <p>All contracts verified on BaseScan. Click any address to inspect the source code.</p>
     </div>
     <div class="contract-grid">
+      <div class="c-card" style="grid-column: span 3; border-color: var(--accent);">
+        <div class="c-icon" style="background:#f59e0b20;color:var(--orange)">F</div>
+        <h4>AgentScopeFactory</h4>
+        <div class="c-desc">One-click deployment. Call <code style="color:var(--green)">create()</code> to deploy your own full protocol stack. Permissionless, no fees.</div>
+        <div class="c-addr">
+          <a href="https://basescan.org/address/0x4440e2137e9f4857453a1a213add7cd174054de5#code" target="_blank">0x4440...4de5</a>
+          <span class="c-verified">VERIFIED</span>
+        </div>
+      </div>
       <div class="c-card">
         <div class="c-icon i-scope">S</div>
         <h4>ScopeToken</h4>
@@ -1034,16 +1238,19 @@
   function dec(hex) { return hex && hex !== "0x" ? parseInt(hex, 16) : 0; }
   function fmtEth(wei) { return (wei / 1e18).toFixed(4); }
 
+  const FACTORY = "0x4440e2137e9F4857453a1a213AdD7CD174054de5";
+
   async function load() {
     const pad = a => "000000000000000000000000" + a.slice(2);
 
-    const [beruScore, echoScore, deals, attests, beruReceipts, budget] = await Promise.all([
+    const [beruScore, echoScore, deals, attests, beruReceipts, budget, factoryCount] = await Promise.all([
       rpc(C.TrustAnchor, "0x534a8465" + pad(BERU)),
       rpc(C.TrustAnchor, "0x534a8465" + pad(ECHO)),
       rpc(C.DealEngine, "0xeadb3c9c"),
       rpc(C.TrustAnchor, "0x962ea8ae"),
       rpc(C.AgentScope, "0x8989a9cc" + pad(BERU)),
       rpc(C.ScopeToken, "0xb63dcc02" + pad(BERU)),
+      rpc(FACTORY, "0xfb35b4e4"), // totalDeployments()
     ]);
 
     document.getElementById("beru-trust").textContent = dec(beruScore) + "/100";
@@ -1053,6 +1260,7 @@
     document.getElementById("beru-receipts").textContent = dec(beruReceipts);
     document.getElementById("beru-budget").textContent = fmtEth(dec(budget)) + " ETH";
     document.getElementById("echo-deals").textContent = dec(deals);
+    document.getElementById("factory-count").textContent = dec(factoryCount);
   }
 
   load();
