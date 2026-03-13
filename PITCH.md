@@ -78,7 +78,7 @@ The agent is powerful. The agent is useful. The agent is bounded.
 ## Proof It Works
 
 - 7 contracts deployed and verified on Base Mainnet (v2, security-audited)
-- 100+ real transactions (not testnet, not simulations)
+- 30+ real transactions on v2 (not testnet, not simulations)
 - **Real Uniswap V3 swap through AgentScope** ([tx](https://basescan.org/tx/0x014dcffe7c36e0e9ca13935b7b9d3067805e023e3bdbf01712cb85054215032c)): 0.0002 ETH -> 0.42 USDC, scoped and receipted
 - Escrow deals completed with milestone payouts
 - 2 registered agents with 100/100 trust scores

@@ -314,7 +314,7 @@ This was a significant moment -- Jabar's instinct to check for bugs before submi
 | Key separation model | Security-first. The whole point is agents operate WITHOUT the owner's key. |
 | Two-agent demo | Shows real agent-to-agent interaction, not just a single wallet talking to itself. |
 | Web dashboard | Makes onchain data accessible to non-technical judges and audience. |
-| 100+ transactions | Demonstrates the protocol actually works at scale, not just in theory. |
+| 30+ transactions (v2) | Demonstrates the protocol actually works at scale, not just in theory. |
 | 7 partner integrations | Self Protocol, Uniswap, Lido, ENS, Lit Protocol, OLAS, Base -- maximizes partner track eligibility. |
 | Factory contract | Transforms project from demo to infrastructure. One call deploys full stack. |
 | v2 security audit | Found and fixed real bugs before submission. Shows professional rigor. |
