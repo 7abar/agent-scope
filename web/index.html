@@ -442,6 +442,63 @@
       margin-bottom: 16px;
     }
     .a-card .a-addr a { color: var(--accent-light); text-decoration: none; }
+    .a-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .a-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      text-decoration: none;
+    }
+    .a-badge.erc8004 {
+      background: #10b98118;
+      color: var(--green);
+      border: 1px solid #10b98130;
+    }
+    .a-badge.erc8004::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+    .a-badge.erc8004:hover { background: #10b98128; }
+    .a-badge.trust-check {
+      background: #6366f118;
+      color: var(--accent-light);
+      border: 1px solid #6366f130;
+    }
+    .a-badge.trust-check::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-light);
+    }
+    .a-tx-ref {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .a-tx-label {
+      font-size: 0.7rem;
+      color: var(--dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .a-tx-hash {
+      font-size: 0.72rem;
+      color: var(--accent-light);
+      text-decoration: none;
+    }
+    .a-tx-hash:hover { text-decoration: underline; }
     .scope-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
     .scope-pill {
       font-size: 0.68rem;
@@ -1015,6 +1072,10 @@
           <span class="trust-pill high" id="beru-trust">--/100</span>
         </div>
         <div class="a-addr"><a href="https://basescan.org/address/0x2012F75004C6e889405D078780AB41AE8606b85b" target="_blank">0x2012F75004C6e889405D078780AB41AE8606b85b</a></div>
+        <div class="a-badges">
+          <a href="https://basescan.org/tx/0x4466a89310fa94293bdd6dfa8d75977c201044f3e8a62830b5b886fe49e0582f" target="_blank" class="a-badge erc8004">ERC-8004</a>
+          <span class="a-badge trust-check" id="beru-trust-badge">--</span>
+        </div>
         <div class="scope-pills">
           <span class="scope-pill active">SPEND</span>
           <span class="scope-pill active">DEAL</span>
@@ -1035,6 +1096,10 @@
             <div class="m-lbl">Role</div>
           </div>
         </div>
+        <div class="a-tx-ref">
+          <span class="a-tx-label">Registration TX</span>
+          <a href="https://basescan.org/tx/0xf5a4e890730144c032b3829894c23d6ba8ddf4d73e407dc6663a9db096eb61eb" target="_blank" class="a-tx-hash mono">0xf5a4...61eb</a>
+        </div>
       </div>
       <div class="a-card">
         <div class="a-top">
@@ -1042,6 +1107,10 @@
           <span class="trust-pill high" id="echo-trust">--/100</span>
         </div>
         <div class="a-addr"><a href="https://basescan.org/address/0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842" target="_blank">0xeba5076a9f5C62Cab0b8C11ac3075B725a6eE842</a></div>
+        <div class="a-badges">
+          <a href="https://basescan.org/tx/0x4466a89310fa94293bdd6dfa8d75977c201044f3e8a62830b5b886fe49e0582f" target="_blank" class="a-badge erc8004">ERC-8004</a>
+          <span class="a-badge trust-check" id="echo-trust-badge">--</span>
+        </div>
         <div class="scope-pills">
           <span class="scope-pill revoked">SPEND</span>
           <span class="scope-pill revoked">ATTEST</span>
@@ -1060,6 +1129,10 @@
             <div class="m-val" id="echo-role">Agent</div>
             <div class="m-lbl">Role</div>
           </div>
+        </div>
+        <div class="a-tx-ref">
+          <span class="a-tx-label">Registration TX</span>
+          <a href="https://basescan.org/tx/0xb6a191198165e5c08cc912ce91c0e193f2741abf5cace44f1e598d08f50b2900" target="_blank" class="a-tx-hash mono">0xb6a1...2900</a>
         </div>
       </div>
     </div>
@@ -1261,6 +1334,8 @@
     document.getElementById("beru-budget").textContent = fmtEth(dec(budget)) + " ETH";
     document.getElementById("echo-deals").textContent = dec(deals);
     document.getElementById("factory-count").textContent = dec(factoryCount);
+    document.getElementById("beru-trust-badge").textContent = dec(beruScore) + "%";
+    document.getElementById("echo-trust-badge").textContent = dec(echoScore) + "%";
   }
 
   load();
