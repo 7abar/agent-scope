@@ -336,3 +336,4 @@ For **The Synthesis Hackathon 2026**
 ---
 
 *The first onchain OS for AI agents. Scoped. Auditable. Unstoppable.*
+<!-- v2 Base Mainnet -->
