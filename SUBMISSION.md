@@ -67,3 +67,5 @@ After deployment, we self-audited and found 6 security vulnerabilities (includin
 
 ## Built With
 Solidity, Foundry, TypeScript, viem, Base, Uniswap V3, Self Protocol
+
+<!-- last updated: March 2026 -->
