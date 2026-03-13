@@ -193,10 +193,10 @@ All contracts verified on BaseScan with source code visible.
 | Contract | Address | BaseScan |
 |----------|---------|----------|
 | AgentScopeFactory | `0x1B1D0cF6eb4816c311109DD3557152827654C7B6` | [View](https://basescan.org/address/0x1b1d0cf6eb4816c311109dd3557152827654c7b6#code) |
-| ScopeToken | `0xCef94f8f4f6f875C016c246EDfACDE8c0578D580` | [View](https://basescan.org/address/0xcef94f8f4f6f875c016c246edfacde8c0578d580#code) |
-| AgentScope | `0x29Ff65DBA69Af3edEBC0570a7cd7f1000B66e1BA` | [View](https://basescan.org/address/0x29ff65dba69af3edebc0570a7cd7f1000b66e1ba#code) |
-| DealEngine | `0x377f2788a6A96064dF572a1A582717799d4023D6` | [View](https://basescan.org/address/0x377f2788a6a96064df572a1a582717799d4023d6#code) |
-| TrustAnchor | `0x07BD306226B598834D1d5C14C11575B5D196a885` | [View](https://basescan.org/address/0x07bd306226b598834d1d5c14c11575b5d196a885#code) |
+| ScopeToken | `0xdF8DA20FEE63fE3AcF3b9231BE98c38116CDCacE` | [View](https://basescan.org/address/0xdf8da20fee63fe3acf3b9231be98c38116cdcace#code) |
+| AgentScope | `0xeA612874db3b85cB4f9BDb63Ab841713BaDCF525` | [View](https://basescan.org/address/0xea612874db3b85cb4f9bdb63ab841713badcf525#code) |
+| DealEngine | `0x7F3e5B4047a947bFFD7b182015157521A42C6B63` | [View](https://basescan.org/address/0x7f3e5b4047a947bffd7b182015157521a42c6b63#code) |
+| TrustAnchor | `0x3B18d5a139be283624e640214a4135692B535AA6` | [View](https://basescan.org/address/0x3b18d5a139be283624e640214a4135692b535aa6#code) |
 | SelfVerifier | `0xa805a3f4FF51912c867e65E2de52b8C77f830DE5` | [View](https://basescan.org/address/0xa805a3f4ff51912c867e65e2de52b8c77f830de5#code) |
 | PartnerIntegrations | `0xa5aEeA7d9894bbE792eF6dEf8FAF6F150011e8E9` | [View](https://basescan.org/address/0xa5aeea7d9894bbe792ef6def8faf6f150011e8e9#code) |
 
