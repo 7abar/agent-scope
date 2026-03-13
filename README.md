@@ -96,6 +96,14 @@ Decentralized reputation without centralized registries.
 - Composable trust scores (0-100)
 - No single point of failure -- trust lives onchain permanently
 
+### SelfVerifier -- Agents that Keep Secrets (Self Protocol Integration)
+ZK proof-of-human verification integrated with Self Protocol.
+- Queries Self Protocol's on-chain agent registry for ZK-verified human backing
+- Gates high-value deals: escrow above threshold requires Self verification
+- Agents prove they're backed by a real human without revealing who
+- Sybil resistance: each agent represents a unique human
+- Privacy-preserving identity layer on top of AgentScope's trust system
+
 ---
 
 ## Deployed on Base Mainnet
@@ -108,6 +116,7 @@ All contracts verified on BaseScan with source code visible.
 | AgentScope | `0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b` | [View](https://basescan.org/address/0x2885d6a0eac7e03476ef458faea4a5ba609ffb1b#code) |
 | DealEngine | `0x33182c42a1f243a17E40ffeee958e120cDB047cd` | [View](https://basescan.org/address/0x33182c42a1f243a17e40ffeee958e120cdb047cd#code) |
 | TrustAnchor | `0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578` | [View](https://basescan.org/address/0xccf00f70d4f54fa26c49fdffe1bca79ae7074578#code) |
+| SelfVerifier | `0xa805a3f4FF51912c867e65E2de52b8C77f830DE5` | [View](https://basescan.org/address/0xa805a3f4ff51912c867e65e2de52b8c77f830de5#code) |
 
 ---
 
@@ -210,9 +219,11 @@ cd contracts && forge test -v
 
 4. **Human-centric.** The human stays in control at every layer. Set boundaries, audit actions, revoke instantly. The agent operates freely within those boundaries -- no micromanagement needed.
 
-5. **Uses real infrastructure.** ERC-1155, ERC-8004, Base, Foundry, viem. Nothing fabricated or hallucinated.
+5. **Uses real infrastructure.** ERC-1155, ERC-8004, Base, Self Protocol, Foundry, viem. Nothing fabricated or hallucinated.
 
 6. **Minimal trust surface.** No shared keys, no centralized registries, no platform dependency. Trust is enforced by math on Ethereum.
+
+7. **Partner integration.** Self Protocol's ZK proof-of-human system integrated for privacy-preserving agent identity verification.
 
 ---
 

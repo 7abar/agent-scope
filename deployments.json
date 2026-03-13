@@ -6,10 +6,18 @@
     "ScopeToken": "0x5aA9c7c255A60deB91bD5DF55fbD831f8A98c11C",
     "AgentScope": "0x2885D6a0EAc7E03476Ef458faea4a5bA609fFB1b",
     "DealEngine": "0x33182c42a1f243a17E40ffeee958e120cDB047cd",
-    "TrustAnchor": "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578"
+    "TrustAnchor": "0xCcf00F70D4F54fa26c49FDfFe1bCA79AE7074578",
+    "SelfVerifier": "0xa805a3f4FF51912c867e65E2de52b8C77f830DE5"
   },
-  "verification": "sourcify",
+  "partnerIntegrations": {
+    "SelfProtocol": {
+      "contract": "SelfVerifier",
+      "description": "ZK proof-of-human verification for agent identity. Gates high-value deals requiring Self Protocol verification.",
+      "selfRegistryOnCelo": "0xaC3DF9ABf80d0F5c020C06B04Cced27763355944",
+      "dealThreshold": "0.01 ETH"
+    }
+  },
+  "verification": "etherscan (BaseScan)",
   "watermark": "JABAR - Built by Beru x Jabar for The Synthesis Hackathon 2026",
-  "deployedAt": "2026-03-13",
   "tests": "35/35 passing"
 }

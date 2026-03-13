@@ -8,10 +8,17 @@
     "build": "tsc",
     "demo": "tsx src/demo.ts"
   },
-  "keywords": ["ethereum", "base", "agent", "ai", "scope"],
+  "keywords": [
+    "ethereum",
+    "base",
+    "agent",
+    "ai",
+    "scope"
+  ],
   "author": "Beru x Jabar",
   "license": "MIT",
   "dependencies": {
+    "@selfxyz/agent-sdk": "^0.2.1",
     "@types/node": "^25.5.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
