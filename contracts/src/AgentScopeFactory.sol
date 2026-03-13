@@ -28,7 +28,7 @@ import {TrustAnchor} from "./TrustAnchor.sol";
  *      ScopeToken + AgentScope + DealEngine + TrustAnchor.
  *
  *      The caller becomes the owner of all deployed contracts.
- *      No fees. No gatekeeping. Fully permissionless.
+ *      No protocol fees. No gatekeeping. Fully permissionless.
  *
  *      This transforms AgentScope from a demo into infrastructure
  *      that any agent framework can adopt.
@@ -64,7 +64,7 @@ contract AgentScopeFactory {
      * @notice Deploy a full AgentScope protocol stack.
      * @dev Deploys 4 contracts with msg.sender as owner.
      *      Total cost: ~0.002 ETH on Base (at typical gas prices).
-     *      No fees. No approval needed. Fully permissionless.
+     *      No protocol fees. No approval needed. Fully permissionless.
      * @return id The deployment ID
      */
     function create() external returns (uint256 id) {

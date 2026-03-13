@@ -127,7 +127,7 @@ One transaction. You get 4 contracts deployed with you as owner:
 - **DealEngine** -- escrow for agent-to-agent deals
 - **TrustAnchor** -- reputation from real interactions
 
-Cost: ~0.002 ETH on Base. No fees. No approval needed. Fully permissionless.
+Gas cost: ~0.002 ETH on Base. No protocol fees. Fully permissionless.
 
 **Factory contract:** [`0x4440e2137e9F4857453a1a213AdD7CD174054de5`](https://basescan.org/address/0x4440e2137e9f4857453a1a213add7cd174054de5#code)
 
