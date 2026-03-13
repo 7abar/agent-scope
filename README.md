@@ -4,7 +4,7 @@
 
 AgentScope is the answer. A protocol on Base that keeps humans in control of AI agents -- without limiting what agents can do.
 
-Agents hold ERC-1155 scope tokens that encode exactly what they're allowed to do. Holding the token = authorized. Burn it = instant revocation. Every action produces an onchain receipt the human can audit anytime.
+Agents hold ERC-1155-inspired scope tokens that encode exactly what they're allowed to do. Holding the token = authorized. Burn it = instant revocation. Every action produces an onchain receipt the human can audit anytime.
 
 No shared keys. No trusted platforms. No centralized kill switches. Just math.
 
@@ -26,7 +26,7 @@ If something goes wrong, you find out after the money is gone.
 
 ## The Solution
 
-AgentScope introduces **scope tokens** -- ERC-1155 capability tokens that define what an agent can do.
+AgentScope introduces **scope tokens** -- ERC-1155-inspired capability tokens that define what an agent can do.
 
 ```
 Human (Owner)
@@ -34,7 +34,7 @@ Human (Owner)
     | mints scope tokens
     v
 +----------------------------------+
-|         ScopeToken (ERC-1155)    |
+|         ScopeToken (ERC-1155-inspired)    |
 |  SPEND:    0.001 ETH/tx max     |
 |  DEAL:     0.01 ETH escrow max  |
 |  INTERACT: specific contracts   |
@@ -68,7 +68,7 @@ Agent (Beru)
 Four contracts, four Synthesis themes:
 
 ### ScopeToken -- Agents that Pay
-ERC-1155 capability tokens encoding spending boundaries.
+ERC-1155-inspired capability tokens encoding spending boundaries.
 - Per-transaction limits
 - Daily spending caps
 - Session expiry (time-bounded permissions)
@@ -310,7 +310,7 @@ cd contracts && forge test -v
 
 ## Why This Wins
 
-1. **Novel primitive.** Scope tokens (ERC-1155 capability tokens for agent permissions) don't exist yet. This is a new pattern for the agent-Ethereum intersection.
+1. **Novel primitive.** Scope tokens (ERC-1155-inspired capability tokens for agent permissions) don't exist yet. This is a new pattern for the agent-Ethereum intersection.
 
 2. **One coherent system.** Not four separate hacks stapled together. A single protocol that addresses all four Synthesis themes through unified architecture.
 
@@ -318,11 +318,11 @@ cd contracts && forge test -v
 
 4. **Human-centric.** The human stays in control at every layer. Set boundaries, audit actions, revoke instantly. The agent operates freely within those boundaries -- no micromanagement needed.
 
-5. **Uses real infrastructure.** ERC-1155, ERC-8004, Base, Self Protocol, Foundry, viem. Nothing fabricated or hallucinated.
+5. **Uses real infrastructure.** ERC-1155-inspired scope tokens, ERC-8004, Base, Self Protocol, Foundry, viem. Nothing fabricated or hallucinated.
 
 6. **Minimal trust surface.** No shared keys, no centralized registries, no platform dependency. Trust is enforced by math on Ethereum.
 
-7. **Partner integrations.** Self Protocol (ZK identity), Uniswap (scoped swaps), Lido (vault staking), ENS (agent names), Lit Protocol (encrypted deals), OLAS (registry compatibility). Seven partner tools, all onchain.
+7. **Live partner integration.** Agents execute real Uniswap swaps through AgentScope's scoped permission system. Self Protocol provides ZK identity verification. Additional partner interfaces (Lido, ENS, Lit Protocol, OLAS) demonstrate ecosystem compatibility.
 
 ---
 

@@ -25,7 +25,7 @@ There is no neutral layer that enforces what the agent is actually allowed to do
 
 ## The Solution
 
-AgentScope introduces **scope tokens** -- ERC-1155 tokens where holding the token means the agent is authorized to act, and burning the token means that authorization is gone. Instantly. Permanently. Without asking anyone's permission.
+AgentScope introduces **scope tokens** -- ERC-1155-inspired tokens where holding the token means the agent is authorized to act, and burning the token means that authorization is gone. Instantly. Permanently. Without asking anyone's permission.
 
 The human mints a scope token that says:
 
@@ -41,7 +41,7 @@ Every action the agent takes produces an onchain receipt. The human can audit ev
 
 Four contracts that form a complete protocol:
 
-**ScopeToken** -- The permission layer. ERC-1155 tokens encoding capability rules: spending limits, whitelisted contracts, deal authority, attestation rights. Hold = authorized. Burn = revoked.
+**ScopeToken** -- The permission layer. ERC-1155-inspired tokens encoding capability rules: spending limits, whitelisted contracts, deal authority, attestation rights. Hold = authorized. Burn = revoked.
 
 **AgentScope** -- The execution layer. All agent actions route through here. Each one is validated against scope tokens before any ETH moves, and recorded as an onchain receipt after.
 
@@ -77,11 +77,12 @@ The agent is powerful. The agent is useful. The agent is bounded.
 
 ## Proof It Works
 
-- 7 contracts deployed and verified on Base Mainnet
-- 90+ real transactions (not testnet, not simulations)
-- 3 completed escrow deals with milestone payouts
+- 7 contracts deployed and verified on Base Mainnet (v2, security-audited)
+- 100+ real transactions (not testnet, not simulations)
+- **Real Uniswap V3 swap through AgentScope** ([tx](https://basescan.org/tx/0x014dcffe7c36e0e9ca13935b7b9d3067805e023e3bdbf01712cb85054215032c)): 0.0002 ETH -> 0.42 USDC, scoped and receipted
+- Escrow deals completed with milestone payouts
 - 2 registered agents with 100/100 trust scores
-- 35/36 tests passing
+- 36/36 tests passing (including unauthorized access tests)
 - Live TypeScript SDK
 - Live dashboard at [7abar.github.io/agentscope-dashboard](https://7abar.github.io/agentscope-dashboard/)
 
